@@ -5,7 +5,7 @@ import { useSocket } from '../context/SocketContext';
 import { BookCard } from '../components/BookCard';
 import { getImageUrl } from '../utils/image';
 import {
-  Heart, RefreshCw, Clock, ShieldAlert, Award, FileText, MessageSquare, Mail, Phone
+  Heart, Clock, ShieldAlert, Award, FileText, MessageSquare, Mail, Phone, Plus
 } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 
@@ -240,8 +240,20 @@ export const Dashboard: React.FC = () => {
           {/* TAB CONTENTS */}
           <div className="flex flex-col gap-6">
             {loading ? (
-              <div className="flex items-center justify-center py-20">
-                <RefreshCw className="h-7 w-7 text-brand-400 animate-spin" />
+              <div className="flex flex-col gap-6 animate-pulse">
+                {[...Array(3)].map((_, index) => (
+                  <div key={index} className="glass-card p-5 flex flex-col sm:flex-row justify-between sm:items-center gap-4 bg-dark-950/20 border border-dark-850/80 rounded-2xl">
+                    <div className="flex gap-4 items-center">
+                      <div className="h-14 w-11 bg-dark-800/40 rounded shrink-0" />
+                      <div className="flex flex-col gap-2.5 text-left">
+                        <div className="h-3 bg-dark-800/40 rounded w-16" />
+                        <div className="h-4 bg-dark-800/40 rounded w-48" />
+                        <div className="h-3 bg-dark-800/40 rounded w-32" />
+                      </div>
+                    </div>
+                    <div className="h-6 bg-dark-800/40 rounded w-20 self-end sm:self-auto" />
+                  </div>
+                ))}
               </div>
             ) : activeTab === 'listings' ? (
               /* MY LISTINGS TAB */
@@ -254,6 +266,17 @@ export const Dashboard: React.FC = () => {
                 </div>
               ) : (
                 <div className="flex flex-col gap-6">
+                  {/* Share Resource CTA */}
+                  <div className="glass-card p-5 flex flex-col sm:flex-row justify-between sm:items-center gap-4 border border-brand-500/20 bg-brand-500/5">
+                    <div className="text-left">
+                      <h4 className="text-sm font-bold text-dark-100">Share another Academic Resource</h4>
+                      <p className="text-[11px] text-dark-400 mt-1">Have more textbooks, reference material, lab records, or exam prep guides? List them now.</p>
+                    </div>
+                    <Link to="/create-listing" className="glass-btn-primary py-2 px-5 text-xs font-bold shrink-0 self-start sm:self-auto flex items-center gap-1.5">
+                      <Plus className="h-3.5 w-3.5" /> Share Resource
+                    </Link>
+                  </div>
+
                   {myResources.map((res) => {
                     const matchRequests = incomingRequests.filter((req) => req.resource._id === res._id);
                     return (

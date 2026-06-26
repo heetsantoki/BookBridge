@@ -1,9 +1,12 @@
+import dotenv from 'dotenv';
+// Load environment variables
+dotenv.config();
+
 import express from 'express';
 import http from 'http';
 import { Server } from 'socket.io';
 import mongoose from 'mongoose';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import path from 'path';
 
 // Import routes
@@ -16,8 +19,6 @@ import reviewRoutes from './routes/reviewRoutes';
 import adminRoutes from './routes/adminRoutes';
 import aiRoutes from './routes/aiRoutes';
 
-// Load environment variables
-dotenv.config();
 
 const app = express();
 const server = http.createServer(app);

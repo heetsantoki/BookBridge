@@ -3,7 +3,8 @@ import { useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
-import { Send, MessageSquare, BookOpen, RefreshCw, Mail, Phone, ShieldCheck } from 'lucide-react';
+import { Send, MessageSquare, BookOpen, RefreshCw, Mail, Phone, ShieldCheck, Image, X } from 'lucide-react';
+import { getImageUrl } from '../utils/image';
 
 export const Chat: React.FC = () => {
   const { user } = useAuth();
@@ -21,6 +22,25 @@ export const Chat: React.FC = () => {
   const [messageInput, setMessageInput] = useState('');
   const [loadingChats, setLoadingChats] = useState(true);
   const [loadingMsgs, setLoadingMsgs] = useState(false);
+
+  // Photo share states
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>('');
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [enlargedImage, setEnlargedImage] = useState<string | null>(null);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setSelectedImage(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handleCancelImage = () => {
+    setSelectedImage(null);
+    setImagePreview('');
+  };
 
   // Typing states
   const [isTyping, setIsTyping] = useState(false);
@@ -170,7 +190,7 @@ export const Chat: React.FC = () => {
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!messageInput.trim() || !selectedChat) return;
+    if ((!messageInput.trim() && !selectedImage) || !selectedChat) return;
 
     const content = messageInput;
     setMessageInput('');
@@ -182,14 +202,29 @@ export const Chat: React.FC = () => {
     }
 
     try {
+      let imageUrl = '';
+      if (selectedImage) {
+        setUploadingImage(true);
+        const formData = new FormData();
+        formData.append('image', selectedImage);
+        const uploadRes = await axios.post('http://localhost:5000/api/messages/upload', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        if (uploadRes.data.success) {
+          imageUrl = uploadRes.data.imageUrl;
+        }
+      }
+
       const res = await axios.post('http://localhost:5000/api/messages', {
         receiverId: selectedChat.otherUser._id || selectedChat.otherUser.id,
         resourceId: selectedChat.resource._id,
-        content
+        content: content || (imageUrl ? '[Photo]' : ''),
+        image: imageUrl
       });
 
       if (res.data.success) {
         const newMsgObj = res.data.message;
+        handleCancelImage(); // Reset photo state
 
         // If it was a temporary chat, fetch conversations again to get the real conversationId
         if (selectedChat.conversationId === 'temp_chat_id') {
@@ -218,6 +253,8 @@ export const Chat: React.FC = () => {
       }
     } catch (err) {
       console.error(err);
+    } finally {
+      setUploadingImage(false);
     }
   };
 
@@ -236,8 +273,20 @@ export const Chat: React.FC = () => {
           
           <div className="flex-grow overflow-y-auto divide-y divide-dark-900/50">
             {loadingChats ? (
-              <div className="flex items-center justify-center py-10">
-                <RefreshCw className="h-5 w-5 text-brand-400 animate-spin" />
+              <div className="flex flex-col animate-pulse">
+                {[...Array(4)].map((_, index) => (
+                  <div key={index} className="p-4 border-b border-dark-900/50 flex gap-3 text-left items-start">
+                    <div className="h-9 w-9 rounded-lg bg-dark-800/40 shrink-0" />
+                    <div className="flex-grow flex flex-col gap-2 min-w-0">
+                      <div className="flex justify-between items-center">
+                        <div className="h-3 bg-dark-800/40 rounded w-24" />
+                        <div className="h-2.5 bg-dark-800/40 rounded w-8" />
+                      </div>
+                      <div className="h-3 bg-dark-800/40 rounded w-32" />
+                      <div className="h-2.5 bg-dark-800/40 rounded w-full mt-1" />
+                    </div>
+                  </div>
+                ))}
               </div>
             ) : conversations.length === 0 ? (
               <div className="p-8 text-center text-xs text-dark-500">
@@ -267,7 +316,7 @@ export const Chat: React.FC = () => {
                       <span className="text-[10px] text-brand-300 font-medium truncate block mt-0.5">{chat.resource.title}</span>
                       {chat.lastMessage && (
                         <p className="text-[11px] text-dark-400 truncate mt-1 leading-normal">
-                          {chat.lastMessage.content}
+                          {chat.lastMessage.image ? '📷 Sent a photo' : chat.lastMessage.content}
                         </p>
                       )}
                     </div>
@@ -310,8 +359,24 @@ export const Chat: React.FC = () => {
               {/* Messages container */}
               <div className="flex-grow overflow-y-auto p-4 flex flex-col gap-4">
                 {loadingMsgs ? (
-                  <div className="flex items-center justify-center py-20">
-                    <RefreshCw className="h-6 w-6 text-brand-400 animate-spin" />
+                  <div className="flex flex-col gap-4 animate-pulse">
+                    {[...Array(4)].map((_, index) => {
+                      const isOwn = index % 2 === 0;
+                      return (
+                        <div
+                          key={index}
+                          className={`flex flex-col max-w-[50%] rounded-2xl p-4 gap-2.5 border ${
+                            isOwn
+                              ? 'bg-brand-600/10 border-brand-500/10 rounded-tr-none self-end'
+                              : 'bg-dark-900 border-dark-850 rounded-tl-none self-start'
+                          }`}
+                          style={{ width: isOwn ? '180px' : '220px' }}
+                        >
+                          <div className="h-3.5 bg-dark-800/40 rounded w-full" />
+                          <div className="h-3 bg-dark-800/40 rounded w-3/4" />
+                        </div>
+                      );
+                    })}
                   </div>
                 ) : messages.length === 0 ? (
                   <div className="text-center py-20 text-xs text-dark-500">
@@ -329,7 +394,15 @@ export const Chat: React.FC = () => {
                             : 'bg-dark-900 border border-dark-850 text-dark-200 rounded-tl-none self-start'
                         }`}
                       >
-                        <p>{msg.content}</p>
+                        {msg.image && (
+                          <img
+                            src={getImageUrl(msg.image)}
+                            alt="Shared"
+                            className="max-w-xs max-h-48 object-cover rounded-lg mb-2 cursor-pointer border border-dark-800 hover:opacity-90 transition-opacity"
+                            onClick={() => setEnlargedImage(msg.image)}
+                          />
+                        )}
+                        {msg.content && <p>{msg.content}</p>}
                         <span className={`text-[8px] mt-1 self-end ${isOwn ? 'text-brand-200' : 'text-dark-550'}`}>
                           {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </span>
@@ -349,16 +422,50 @@ export const Chat: React.FC = () => {
                 <div ref={messagesEndRef} />
               </div>
 
+              {/* Image Preview Area */}
+              {imagePreview && (
+                <div className="px-4 py-2 border-t border-dark-850 bg-dark-950/40 flex items-center gap-3 relative">
+                  <div className="relative">
+                    <img src={imagePreview} className="h-16 w-16 object-cover rounded-lg border border-dark-800" alt="Preview" />
+                    <button
+                      type="button"
+                      onClick={handleCancelImage}
+                      className="absolute -top-1.5 -right-1.5 bg-red-500 hover:bg-red-600 text-white rounded-full p-0.5"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                  <div className="text-[10px] text-dark-400">
+                    {uploadingImage ? 'Uploading image...' : 'Image selected. Click send to share.'}
+                  </div>
+                </div>
+              )}
+
               {/* Message Input Box */}
-              <form onSubmit={handleSendMessage} className="p-4 border-t border-dark-850 bg-dark-950/20 flex gap-3">
+              <form onSubmit={handleSendMessage} className="p-4 border-t border-dark-850 bg-dark-950/20 flex gap-3 items-center">
+                <label className="cursor-pointer p-2.5 text-dark-300 hover:text-dark-100 hover:bg-dark-900/60 rounded-xl transition-all duration-200 flex items-center justify-center shrink-0">
+                  <Image className="h-4.5 w-4.5" />
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleImageChange}
+                    disabled={uploadingImage}
+                  />
+                </label>
                 <input
                   type="text"
-                  placeholder="Type message here..."
+                  placeholder={uploadingImage ? "Uploading photo..." : "Type message here..."}
                   className="glass-input flex-grow text-xs py-2.5"
                   value={messageInput}
                   onChange={handleTypingInput}
+                  disabled={uploadingImage}
                 />
-                <button type="submit" className="glass-btn-primary p-2.5 flex items-center justify-center shrink-0 rounded-xl">
+                <button 
+                  type="submit" 
+                  disabled={uploadingImage || (!messageInput.trim() && !selectedImage)} 
+                  className="glass-btn-primary p-2.5 flex items-center justify-center shrink-0 rounded-xl"
+                >
                   <Send className="h-4.5 w-4.5" />
                 </button>
               </form>
@@ -374,6 +481,29 @@ export const Chat: React.FC = () => {
           )}
         </main>
       </div>
+
+      {/* Enlarged Image Modal Overlay */}
+      {enlargedImage && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm p-4 cursor-zoom-out"
+          onClick={() => setEnlargedImage(null)}
+        >
+          <div className="relative max-w-4xl max-h-[90vh] flex flex-col items-center justify-center" onClick={(e) => e.stopPropagation()}>
+            <button 
+              onClick={() => setEnlargedImage(null)}
+              className="absolute -top-12 right-0 bg-dark-900/80 hover:bg-red-500 text-white rounded-xl p-2 border border-dark-800 z-10 transition-colors"
+              title="Close Viewer"
+            >
+              <X className="h-5 w-5" />
+            </button>
+            <img 
+              src={getImageUrl(enlargedImage)} 
+              alt="Enlarged shared content" 
+              className="max-w-full max-h-[80vh] object-contain rounded-2xl border border-dark-800 shadow-2xl bg-dark-950" 
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

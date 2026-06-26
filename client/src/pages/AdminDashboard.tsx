@@ -48,9 +48,70 @@ export const AdminDashboard: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center py-40 gap-3">
-        <RefreshCw className="h-8 w-8 text-brand-400 animate-spin" />
-        <span className="text-sm text-dark-400 font-semibold">Loading administrative dashboard...</span>
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 text-left animate-pulse">
+        {/* Header Skeleton */}
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <div className="h-7 bg-dark-800/40 rounded w-48 mb-2" />
+            <div className="h-3.5 bg-dark-800/40 rounded w-96" />
+          </div>
+          <div className="h-8 bg-dark-800/40 rounded w-28" />
+        </div>
+
+        {/* Metrics Grid Skeleton */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+          {[...Array(4)].map((_, index) => (
+            <div key={index} className="glass-card p-6 flex items-center justify-between border border-dark-850">
+              <div className="flex flex-col gap-2">
+                <div className="h-3 bg-dark-800/40 rounded w-24" />
+                <div className="h-6 bg-dark-800/40 rounded w-16" />
+              </div>
+              <div className="h-11 w-11 bg-dark-800/40 rounded-xl" />
+            </div>
+          ))}
+        </div>
+
+        {/* Columns Skeleton */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <div className="lg:col-span-7 flex flex-col gap-6">
+            <div className="glass-card p-6">
+              <div className="h-5 bg-dark-800/40 rounded w-48 mb-6 pb-3 border-b border-dark-850" />
+              <div className="flex flex-col gap-5">
+                {[...Array(2)].map((_, i) => (
+                  <div key={i} className="p-4 bg-dark-950/40 border border-dark-850 rounded-2xl flex flex-col gap-4">
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center gap-3">
+                        <div className="h-9 w-9 bg-dark-800/40 rounded-lg" />
+                        <div className="flex flex-col gap-1.5">
+                          <div className="h-3.5 bg-dark-800/40 rounded w-24" />
+                          <div className="h-2.5 bg-dark-800/40 rounded w-36" />
+                        </div>
+                      </div>
+                      <div className="h-2.5 bg-dark-800/40 rounded w-12" />
+                    </div>
+                    <div className="h-44 bg-dark-800/40 rounded-xl w-full" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          <div className="lg:col-span-5 flex flex-col gap-6">
+            <div className="glass-card p-6">
+              <div className="h-5 bg-dark-800/40 rounded w-48 mb-6" />
+              <div className="flex flex-col gap-4">
+                {[...Array(3)].map((_, i) => (
+                  <div key={i} className="flex flex-col gap-2">
+                    <div className="flex justify-between">
+                      <div className="h-3 bg-dark-800/40 rounded w-32" />
+                      <div className="h-3 bg-dark-800/40 rounded w-8" />
+                    </div>
+                    <div className="h-6 bg-dark-800/40 rounded-lg w-full" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

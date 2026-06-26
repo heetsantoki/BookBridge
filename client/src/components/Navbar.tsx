@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
-import { BookOpen, MessageSquare, Bell, User, LogOut, ChevronDown, ShieldAlert, Award } from 'lucide-react';
+import { BookOpen, MessageSquare, Bell, User, LogOut, ChevronDown, ShieldAlert, Award, Plus } from 'lucide-react';
 import axios from 'axios';
 
 export const Navbar: React.FC = () => {
@@ -171,6 +171,14 @@ export const Navbar: React.FC = () => {
           <div className="flex items-center gap-4">
             {user ? (
               <>
+                {/* Share Resource Button */}
+                <Link
+                  to="/create-listing"
+                  className="hidden sm:inline-flex items-center gap-1.5 glass-btn-primary !py-1.5 !px-3.5 !text-xs font-bold"
+                >
+                  <Plus className="h-3.5 w-3.5" /> Share Resource
+                </Link>
+
                 {/* Notification Dropdown */}
                 <div className="relative" ref={notifRef}>
                   <button

@@ -4,18 +4,37 @@ import Resource from '../models/Resource';
 import User from '../models/User';
 import Transaction from '../models/Transaction';
 import { AuthRequest } from '../middleware/auth';
+import { uploadFile } from '../middleware/upload';
 
 export const getConversationId = (user1: string, user2: string, resourceId: string) => {
   const sortedUsers = [user1, user2].sort().join('-');
   return `${sortedUsers}_${resourceId}`;
 };
 
+export const uploadMessageImage = async (req: AuthRequest, res: Response) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'Please upload an image file' });
+    }
+
+    const imageUrl = await uploadFile(req.file);
+
+    res.status(200).json({
+      success: true,
+      imageUrl
+    });
+  } catch (error: any) {
+    console.error('Chat Image Upload Error:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 export const sendMessage = async (req: AuthRequest, res: Response) => {
   try {
-    const { receiverId, resourceId, content } = req.body;
+    const { receiverId, resourceId, content, image } = req.body;
 
-    if (!receiverId || !resourceId || !content) {
-      return res.status(400).json({ success: false, message: 'Please provide receiverId, resourceId and message content' });
+    if (!receiverId || !resourceId || (!content && !image)) {
+      return res.status(400).json({ success: false, message: 'Please provide receiverId, resourceId and either message content or image' });
     }
 
     const senderId = req.user!.id;
@@ -26,7 +45,8 @@ export const sendMessage = async (req: AuthRequest, res: Response) => {
       sender: senderId,
       receiver: receiverId,
       resource: resourceId,
-      content,
+      content: content || '',
+      image: image || '',
       isRead: false
     });
 
@@ -93,6 +113,7 @@ export const getConversations = async (req: AuthRequest, res: Response) => {
           resource,
           lastMessage: {
             content: msg.content,
+            image: msg.image,
             sender: msg.sender._id,
             createdAt: msg.createdAt,
             isRead: msg.isRead

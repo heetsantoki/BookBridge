@@ -320,9 +320,28 @@ export const Home: React.FC = () => {
 
           {/* Resource Grid list */}
           {loading ? (
-            <div className="flex flex-col items-center justify-center py-20 gap-3">
-              <RefreshCw className="h-8 w-8 text-brand-400 animate-spin" />
-              <span className="text-sm text-dark-400 font-semibold">Updating catalog list...</span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+              {[...Array(6)].map((_, index) => (
+                <div key={index} className="glass-card p-5 flex flex-col gap-4 animate-pulse border border-dark-850">
+                  <div className="bg-dark-800/40 rounded-xl aspect-[4/3] w-full" />
+                  <div className="flex flex-col gap-2.5">
+                    <div className="h-3 bg-dark-800/40 rounded w-1/3" />
+                    <div className="h-4 bg-dark-800/40 rounded w-3/4" />
+                    <div className="h-3 bg-dark-800/40 rounded w-1/2" />
+                  </div>
+                  <div className="h-[1px] bg-dark-800/40" />
+                  <div className="flex justify-between items-center pt-2">
+                    <div className="flex flex-col gap-1.5">
+                      <div className="h-2 bg-dark-800/40 rounded w-12" />
+                      <div className="h-3.5 bg-dark-800/40 rounded w-16" />
+                    </div>
+                    <div className="flex flex-col gap-1.5 text-right">
+                      <div className="h-2 bg-dark-800/40 rounded w-12" />
+                      <div className="h-3.5 bg-dark-800/40 rounded w-16" />
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           ) : resources.length === 0 ? (
             <div className="text-center py-20 rounded-3xl bg-dark-900/20 border border-dark-800 border-dashed">
