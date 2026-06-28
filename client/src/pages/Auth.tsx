@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -36,13 +36,28 @@ const departments = [
 ];
 
 export const Auth: React.FC = () => {
-  const { user, login, registerUser, googleLoginSuccess, uploadIdCard, loading } = useAuth();
+  const { user, login, registerUser, googleLoginSuccess, uploadIdCard, verifyOtp, resendOtp, loading } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [authError, setAuthError] = useState<string | null>(null);
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [uploadingId, setUploadingId] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
+
+  // OTP Verification States
+  const [verifyingEmail, setVerifyingEmail] = useState<string | null>(null);
+  const [otpCode, setOtpCode] = useState<string>('');
+  const [isVerifyingOtp, setIsVerifyingOtp] = useState<boolean>(false);
+  const [resendCooldown, setResendCooldown] = useState<number>(0);
+
   const navigate = useNavigate();
+
+  useEffect(() => {
+    let timer: any;
+    if (resendCooldown > 0) {
+      timer = setTimeout(() => setResendCooldown(resendCooldown - 1), 1000);
+    }
+    return () => clearTimeout(timer);
+  }, [resendCooldown]);
 
   const { register: registerLogin, handleSubmit: handleLoginSubmit, formState: { errors: loginErrors } } = useForm<LoginFields>({
     resolver: zodResolver(loginSchema)
@@ -58,7 +73,12 @@ export const Auth: React.FC = () => {
   const onLoginSubmit = async (data: LoginFields) => {
     setAuthError(null);
     try {
-      await login(data.email, data.password);
+      const res = await login(data.email, data.password);
+      if (res && res.requireOtpVerification) {
+        setVerifyingEmail(data.email);
+        setResendCooldown(60);
+        return;
+      }
       navigate('/');
     } catch (err: any) {
       setAuthError(err.message || 'Login failed. Please check your credentials.');
@@ -68,10 +88,43 @@ export const Auth: React.FC = () => {
   const onSignupSubmit = async (data: RegisterFields) => {
     setAuthError(null);
     try {
-      await registerUser(data);
-      // Wait for AuthContext redirect states
+      const res = await registerUser(data);
+      if (res && res.requireOtpVerification) {
+        setVerifyingEmail(data.email);
+        setResendCooldown(60);
+      }
     } catch (err: any) {
       setAuthError(err.message || 'Signup failed. Email might already be registered.');
+    }
+  };
+
+  const handleVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!verifyingEmail || otpCode.length !== 6) {
+      setAuthError('Please enter a 6-digit OTP code.');
+      return;
+    }
+
+    setIsVerifyingOtp(true);
+    setAuthError(null);
+    try {
+      await verifyOtp(verifyingEmail, otpCode);
+      navigate('/');
+    } catch (err: any) {
+      setAuthError(err.message || 'OTP verification failed.');
+    } finally {
+      setIsVerifyingOtp(false);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    if (!verifyingEmail || resendCooldown > 0) return;
+    setAuthError(null);
+    try {
+      await resendOtp(verifyingEmail);
+      setResendCooldown(60);
+    } catch (err: any) {
+      setAuthError(err.message || 'Failed to resend OTP.');
     }
   };
 
@@ -192,6 +245,74 @@ export const Auth: React.FC = () => {
           >
             Go to Browse Catalog
           </button>
+        </div>
+      </div>
+    );
+  }
+
+  // OTP Verification Screen
+  if (verifyingEmail) {
+    return (
+      <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center p-4">
+        <div className="glass-card w-full max-w-md p-8 text-center animate-fade-in">
+          <p className="text-sm text-dark-300 mb-8 leading-relaxed max-w-sm mx-auto">
+            We sent a 6-digit verification code to <span className="text-dark-100 font-bold">{verifyingEmail}</span>. Please enter it below.
+          </p>
+
+          {authError && (
+            <div className="mb-6 flex items-start gap-2.5 rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-left text-xs text-red-400">
+              <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
+              <span>{authError}</span>
+            </div>
+          )}
+
+          <form onSubmit={handleVerifyOtp} className="flex flex-col gap-5 text-left">
+            <div className="flex flex-col">
+              <label className="text-[11px] font-bold text-dark-400 tracking-widest uppercase mb-2">VERIFICATION CODE</label>
+              <input
+                type="text"
+                maxLength={6}
+                value={otpCode}
+                onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
+                placeholder="123456"
+                className="w-full bg-dark-950/70 border border-dark-800 rounded-xl py-3.5 text-center text-xl font-bold tracking-[10px] text-dark-100 placeholder-dark-600 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/20 transition-all duration-200"
+                required
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={otpCode.length !== 6 || isVerifyingOtp}
+              className="w-full py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-bold text-sm transition-all duration-200 shadow-md shadow-indigo-600/10 flex items-center justify-center gap-1 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none mt-2"
+            >
+              {isVerifyingOtp ? 'Verifying...' : 'Verify & Continue →'}
+            </button>
+
+            <div className="flex flex-col gap-3 items-center mt-4">
+              <button
+                type="button"
+                onClick={handleResendOtp}
+                disabled={resendCooldown > 0}
+                className={`text-xs font-semibold underline ${
+                  resendCooldown > 0 ? 'text-dark-500 cursor-not-allowed no-underline' : 'text-indigo-400 hover:text-indigo-300'
+                }`}
+              >
+                {resendCooldown > 0 ? `Resend Code (${resendCooldown}s)` : 'Resend Code'}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setVerifyingEmail(null);
+                  setOtpCode('');
+                  setAuthError(null);
+                }}
+                className="text-[11px] text-dark-500 hover:text-dark-300 font-semibold transition-colors"
+              >
+                Back to Login
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     );

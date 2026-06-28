@@ -20,9 +20,12 @@ interface AuthContextType {
   user: UserProfile | null;
   token: string | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  registerUser: (formData: any) => Promise<void>;
+  initialLoading: boolean;
+  login: (email: string, password: string) => Promise<any>;
+  registerUser: (formData: any) => Promise<any>;
   googleLoginSuccess: (credential: string) => Promise<void>;
+  verifyOtp: (email: string, otp: string) => Promise<void>;
+  resendOtp: (email: string) => Promise<void>;
   logout: () => void;
   uploadIdCard: (file: File) => Promise<void>;
   refreshProfile: () => Promise<void>;
@@ -36,6 +39,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<UserProfile | null>(null);
   const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
   const [loading, setLoading] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(true);
 
   // Configure global Axios headers
   if (token) {
@@ -71,6 +75,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       }
       setLoading(false);
+      setInitialLoading(false);
     };
 
     initAuth();
@@ -86,8 +91,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setToken(userToken);
         setUser(userData);
       }
+      setLoading(false);
+      return response.data;
     } catch (error: any) {
       setLoading(false);
+      if (error.response?.data?.requireOtpVerification) {
+        return error.response.data;
+      }
       throw new Error(error.response?.data?.message || 'Login failed');
     }
   };
@@ -96,12 +106,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLoading(true);
     try {
       const response = await axios.post(`${API_URL}/auth/register`, formData);
-      if (response.data.success) {
-        const { token: userToken, user: userData } = response.data;
-        localStorage.setItem('token', userToken);
-        setToken(userToken);
-        setUser(userData);
-      }
+      setLoading(false);
+      return response.data;
     } catch (error: any) {
       setLoading(false);
       throw new Error(error.response?.data?.message || 'Registration failed');
@@ -141,6 +147,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const verifyOtp = async (email: string, otp: string) => {
+    setLoading(true);
+    try {
+      const response = await axios.post(`${API_URL}/auth/verify-otp`, { email, otp });
+      if (response.data.success) {
+        const { token: userToken, user: userData } = response.data;
+        localStorage.setItem('token', userToken);
+        setToken(userToken);
+        setUser(userData);
+      }
+      setLoading(false);
+    } catch (error: any) {
+      setLoading(false);
+      throw new Error(error.response?.data?.message || 'OTP verification failed');
+    }
+  };
+
+  const resendOtp = async (email: string) => {
+    try {
+      await axios.post(`${API_URL}/auth/resend-otp`, { email });
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || 'Failed to resend OTP');
+    }
+  };
+
   const logout = () => {
     localStorage.removeItem('token');
     setToken(null);
@@ -154,9 +185,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       user,
       token,
       loading,
+      initialLoading,
       login,
       registerUser,
       googleLoginSuccess,
+      verifyOtp,
+      resendOtp,
       logout,
       uploadIdCard,
       refreshProfile

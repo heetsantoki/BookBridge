@@ -13,6 +13,9 @@ export interface IUser extends Document {
   isVerified: boolean;
   verificationStatus: 'pending' | 'approved' | 'rejected';
   studentIdImage?: string;
+  isEmailVerified: boolean;
+  emailOtp?: string;
+  emailOtpExpires?: Date;
   wishlist: mongoose.Types.ObjectId[];
   createdAt: Date;
 }
@@ -30,6 +33,9 @@ const UserSchema: Schema = new Schema({
   isVerified: { type: Boolean, default: false },
   verificationStatus: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' },
   studentIdImage: { type: String },
+  isEmailVerified: { type: Boolean, default: false },
+  emailOtp: { type: String },
+  emailOtpExpires: { type: Date },
   wishlist: [{ type: Schema.Types.ObjectId, ref: 'Resource' }]
 }, {
   timestamps: true

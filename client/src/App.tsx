@@ -67,9 +67,9 @@ const PageSkeleton: React.FC = () => (
 
 // Route protections
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user, loading } = useAuth();
+  const { user, initialLoading } = useAuth();
 
-  if (loading) {
+  if (initialLoading) {
     return <PageSkeleton />;
   }
 
@@ -81,9 +81,9 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 };
 
 const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user, loading } = useAuth();
+  const { user, initialLoading } = useAuth();
 
-  if (loading) {
+  if (initialLoading) {
     return <PageSkeleton />;
   }
 
@@ -95,9 +95,9 @@ const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 };
 
 function AppContent() {
-  const { loading } = useAuth();
+  const { initialLoading } = useAuth();
 
-  if (loading) {
+  if (initialLoading) {
     return <PageSkeleton />;
   }
 
@@ -109,7 +109,7 @@ function AppContent() {
           <Route path="/" element={<Home />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/resources/:id" element={<ResourceDetails />} />
-          
+
           {/* Protected student routes */}
           <Route path="/create-listing" element={
             <ProtectedRoute>
@@ -137,7 +137,7 @@ function AppContent() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>
-      
+
       {/* Footer layout */}
       <footer className="border-t border-dark-850/60 bg-dark-950 py-6 text-center text-xs text-dark-500 mt-auto">
         <div className="mx-auto max-w-7xl px-4 flex flex-col sm:flex-row justify-between items-center gap-3">
@@ -151,9 +151,9 @@ function AppContent() {
   );
 }
 
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || 
-  (window.location.hostname === 'localhost' 
-    ? '127562380182-5ft23evtg7388f1at5uac3g79kt4on9g.apps.googleusercontent.com' 
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID ||
+  (window.location.hostname === 'localhost'
+    ? '698982913475-nv7tm53f5i6oro45735nk2o4db516md8.apps.googleusercontent.com'
     : '');
 
 export default function App() {

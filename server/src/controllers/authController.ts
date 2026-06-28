@@ -5,6 +5,11 @@ import { OAuth2Client } from 'google-auth-library';
 import User from '../models/User';
 import { AuthRequest } from '../middleware/auth';
 import { uploadFile } from '../middleware/upload';
+import { sendOtpEmail } from '../utils/mailer';
+
+const generateOtp = (): string => {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+};
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -30,8 +35,10 @@ export const register = async (req: Request, res: Response) => {
       return res.status(400).json({ success: false, message: 'Please provide name, email and password' });
     }
 
-    const userExists = await User.findOne({ email });
-    if (userExists) {
+    const emailLowercase = email.toLowerCase();
+    let user = await User.findOne({ email: emailLowercase });
+
+    if (user && user.isEmailVerified) {
       return res.status(400).json({ success: false, message: 'User already exists' });
     }
 
@@ -39,37 +46,55 @@ export const register = async (req: Request, res: Response) => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     // Determine verification state based on email domain
-    const isUni = isUniversityEmail(email);
+    const isUni = isUniversityEmail(emailLowercase);
     const verificationStatus = isUni ? 'approved' : 'pending';
     const isVerified = isUni;
 
-    const user = await User.create({
-      name,
-      email,
-      password: hashedPassword,
-      department,
-      semester,
-      phone,
-      isVerified,
-      verificationStatus,
-      avatar: `https://api.dicebear.com/7.x/adventurer/svg?seed=${name}`
-    });
+    const otp = generateOtp();
+    const otpExpires = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
 
-    res.status(201).json({
+    if (user) {
+      // Overwrite/update the unverified user details
+      user.name = name;
+      user.password = hashedPassword;
+      user.department = department;
+      user.semester = semester;
+      user.phone = phone;
+      user.isVerified = isVerified;
+      user.verificationStatus = verificationStatus;
+      user.emailOtp = otp;
+      user.emailOtpExpires = otpExpires;
+      user.avatar = `https://api.dicebear.com/7.x/adventurer/svg?seed=${name}`;
+      await user.save();
+    } else {
+      // Create new unverified user
+      user = await User.create({
+        name,
+        email: emailLowercase,
+        password: hashedPassword,
+        department,
+        semester,
+        phone,
+        isVerified,
+        verificationStatus,
+        isEmailVerified: false,
+        emailOtp: otp,
+        emailOtpExpires: otpExpires,
+        avatar: `https://api.dicebear.com/7.x/adventurer/svg?seed=${name}`
+      });
+    }
+
+    // Send verification email
+    const emailSent = await sendOtpEmail(user.email, otp, user.name);
+    if (!emailSent) {
+      return res.status(500).json({ success: false, message: 'Failed to send OTP email' });
+    }
+
+    res.status(200).json({
       success: true,
-      token: generateToken(user._id.toString()),
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        department: user.department,
-        semester: user.semester,
-        phone: user.phone,
-        isVerified: user.isVerified,
-        verificationStatus: user.verificationStatus,
-        avatar: user.avatar
-      }
+      requireOtpVerification: true,
+      email: user.email,
+      message: 'OTP sent to email. Please verify.'
     });
   } catch (error: any) {
     console.error('Registration Error:', error);
@@ -85,7 +110,7 @@ export const login = async (req: Request, res: Response) => {
       return res.status(400).json({ success: false, message: 'Please provide email and password' });
     }
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: email.toLowerCase() });
     if (!user || !user.password) {
       return res.status(400).json({ success: false, message: 'Invalid credentials' });
     }
@@ -93,6 +118,24 @@ export const login = async (req: Request, res: Response) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({ success: false, message: 'Invalid credentials' });
+    }
+
+    // Check if email OTP is verified
+    if (!user.isEmailVerified) {
+      const otp = generateOtp();
+      user.emailOtp = otp;
+      user.emailOtpExpires = new Date(Date.now() + 15 * 60 * 1000);
+      await user.save();
+
+      // Send verification email
+      await sendOtpEmail(user.email, otp, user.name);
+
+      return res.status(401).json({
+        success: false,
+        requireOtpVerification: true,
+        email: user.email,
+        message: 'Email not verified. An OTP has been sent to your email.'
+      });
     }
 
     res.status(200).json({
@@ -160,11 +203,22 @@ export const googleLogin = async (req: Request, res: Response) => {
         googleId,
         avatar: picture || `https://api.dicebear.com/7.x/adventurer/svg?seed=${name}`,
         isVerified: isUni,
-        verificationStatus: isUni ? 'approved' : 'pending'
+        verificationStatus: isUni ? 'approved' : 'pending',
+        isEmailVerified: true
       });
-    } else if (!user.googleId) {
-      user.googleId = googleId;
-      await user.save();
+    } else {
+      let needsSave = false;
+      if (!user.googleId) {
+        user.googleId = googleId;
+        needsSave = true;
+      }
+      if (!user.isEmailVerified) {
+        user.isEmailVerified = true;
+        needsSave = true;
+      }
+      if (needsSave) {
+        await user.save();
+      }
     }
 
     res.status(200).json({
@@ -185,6 +239,101 @@ export const googleLogin = async (req: Request, res: Response) => {
     });
   } catch (error: any) {
     console.error('Google Auth Error:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const verifyOtp = async (req: Request, res: Response) => {
+  try {
+    const { email, otp } = req.body;
+
+    if (!email || !otp) {
+      return res.status(400).json({ success: false, message: 'Please provide email and OTP code' });
+    }
+
+    const emailLowercase = email.toLowerCase();
+    const user = await User.findOne({ email: emailLowercase });
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    if (user.isEmailVerified) {
+      return res.status(400).json({ success: false, message: 'Email already verified' });
+    }
+
+    if (!user.emailOtp || user.emailOtp !== otp) {
+      return res.status(400).json({ success: false, message: 'Invalid OTP code' });
+    }
+
+    if (!user.emailOtpExpires || user.emailOtpExpires < new Date()) {
+      return res.status(400).json({ success: false, message: 'OTP has expired. Please request a new one.' });
+    }
+
+    // OTP is valid!
+    user.isEmailVerified = true;
+    user.emailOtp = undefined;
+    user.emailOtpExpires = undefined;
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      token: generateToken(user._id.toString()),
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        department: user.department,
+        semester: user.semester,
+        phone: user.phone,
+        isVerified: user.isVerified,
+        verificationStatus: user.verificationStatus,
+        avatar: user.avatar
+      }
+    });
+  } catch (error: any) {
+    console.error('Verify OTP Error:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const resendOtp = async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ success: false, message: 'Please provide email address' });
+    }
+
+    const emailLowercase = email.toLowerCase();
+    const user = await User.findOne({ email: emailLowercase });
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    if (user.isEmailVerified) {
+      return res.status(400).json({ success: false, message: 'Email is already verified' });
+    }
+
+    const otp = generateOtp();
+    user.emailOtp = otp;
+    user.emailOtpExpires = new Date(Date.now() + 15 * 60 * 1000);
+    await user.save();
+
+    // Send verification email
+    const emailSent = await sendOtpEmail(user.email, otp, user.name);
+    if (!emailSent) {
+      return res.status(500).json({ success: false, message: 'Failed to send OTP email' });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'A new OTP has been sent to your email.'
+    });
+  } catch (error: any) {
+    console.error('Resend OTP Error:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
