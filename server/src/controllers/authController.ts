@@ -110,7 +110,7 @@ export const login = async (req: Request, res: Response) => {
       return res.status(400).json({ success: false, message: 'Please provide email and password' });
     }
 
-    const user = await User.findOne({ email: email.toLowerCase() });
+    const user = await User.findOne({ email: email.trim().toLowerCase() });
     if (!user || !user.password) {
       return res.status(400).json({ success: false, message: 'Invalid credentials' });
     }

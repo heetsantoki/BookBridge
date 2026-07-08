@@ -100,15 +100,15 @@ export const Home: React.FC = () => {
   };
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 animate-fade-in">
       {/* Banner alerting users about pending status */}
       {user && !user.isVerified && (
-        <div className="mb-8 flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl border border-amber-500/25 bg-amber-500/5 p-5 text-left backdrop-blur-md">
+        <div className="mb-8 flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl border border-amber-500/25 bg-amber-500/5 p-5 text-left backdrop-blur-xl shadow-glow-amber">
           <div className="flex items-start gap-3">
-            <ShieldAlert className="h-6 w-6 text-amber-400 shrink-0 mt-0.5" />
+            <ShieldAlert className="h-6 w-6 text-amber-400 shrink-0 mt-0.5 animate-pulse" />
             <div>
-              <h4 className="font-outfit text-sm font-extrabold text-amber-200">Account Pending Verification</h4>
-              <p className="text-xs text-dark-400 mt-1 max-w-2xl leading-normal">
+              <h4 className="font-outfit text-sm font-extrabold text-amber-200 uppercase tracking-wide">Account Pending Verification</h4>
+              <p className="text-xs text-dark-300 mt-1 max-w-2xl leading-relaxed">
                 {user.studentIdImage 
                   ? 'Your Student ID has been uploaded and is waiting for administrator approval. You can browse resources, but posting new resource listings requires active approval.' 
                   : 'Please upload a Student ID card photo under your profile configuration to unlock listing and exchange privileges.'
@@ -117,7 +117,7 @@ export const Home: React.FC = () => {
             </div>
           </div>
           {!user.studentIdImage && (
-            <Link to="/auth" className="glass-btn-primary py-2 px-5 text-xs whitespace-nowrap bg-amber-600 hover:bg-amber-700 shadow-none">
+            <Link to="/auth" className="glass-btn-primary py-2 px-5 text-xs font-bold uppercase tracking-wider whitespace-nowrap bg-amber-600 hover:bg-amber-700 shadow-none hover:-translate-y-0.5 active:translate-y-0">
               Verify Account Now
             </Link>
           )}
@@ -125,25 +125,29 @@ export const Home: React.FC = () => {
       )}
 
       {/* Hero Visual Section */}
-      <div className="relative rounded-3xl overflow-hidden mb-12 p-8 sm:p-12 bg-gradient-to-br from-brand-950/80 to-dark-950/40 border border-brand-500/10 shadow-glass">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-brand-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-accent-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="relative rounded-3xl overflow-hidden mb-12 p-8 sm:p-14 bg-gradient-to-br from-dark-850/80 via-dark-900/60 to-dark-950/40 border border-white/[0.06] shadow-2xl">
+        {/* Ambient background glows */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-brand-500/10 rounded-full blur-3xl pointer-events-none animate-pulse-slow" />
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-accent-500/10 rounded-full blur-3xl pointer-events-none animate-pulse-slow [animation-delay:2s]" />
         
+        {/* Subtle grid mesh overlay */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
+
         <div className="relative z-10 max-w-2xl text-left">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold text-brand-300 bg-brand-500/10 border border-brand-500/20 mb-4 uppercase tracking-wider">
+          <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[10px] font-bold text-brand-300 bg-brand-500/10 border border-brand-500/20 mb-5 uppercase tracking-widest shadow-glow-indigo">
             <Sparkles className="h-3.5 w-3.5 animate-spin-slow" /> University Circle Hub
           </span>
-          <h1 className="font-outfit text-3xl sm:text-5xl font-extrabold tracking-tight text-white mb-4">
-            Peer-to-Peer Academic Resource Exchange
+          <h1 className="font-outfit text-3xl sm:text-5xl font-extrabold tracking-tight text-white mb-4 leading-[1.15]">
+            Peer-to-Peer Academic <span className="bg-gradient-to-r from-brand-300 to-accent-400 bg-clip-text text-transparent">Resource Exchange</span>
           </h1>
-          <p className="text-base text-dark-300 leading-relaxed mb-6">
+          <p className="text-sm sm:text-base text-dark-300 leading-relaxed mb-8 max-w-xl">
             Bridge the textbook gap. Borrow, rent, buy, or download notes, lab manuals, project reports, and exam papers directly from verified students on campus.
           </p>
           <div className="flex flex-wrap gap-4">
-            <Link to="/dashboard" className="glass-btn-primary flex items-center gap-2">
+            <Link to="/dashboard" className="glass-btn-primary flex items-center gap-2 font-bold uppercase tracking-wider text-xs">
               <Plus className="h-4 w-4" /> Share a Resource
             </Link>
-            <a href="#browse-catalog" className="glass-btn-secondary">
+            <a href="#browse-catalog" className="glass-btn-secondary font-bold uppercase tracking-wider text-xs">
               Browse Catalog
             </a>
           </div>
@@ -154,14 +158,14 @@ export const Home: React.FC = () => {
       {user && recommendations.length > 0 && (
         <div className="mb-12 text-left">
           <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2.5">
               <BrainCircuit className="h-6 w-6 text-brand-400 animate-pulse" />
               <h2 className="font-outfit text-xl sm:text-2xl font-extrabold text-white">AI-Recommended for You</h2>
             </div>
             <button 
               onClick={fetchRecommendations} 
               disabled={loadingAI}
-              className="p-1.5 hover:bg-dark-900 rounded-lg text-dark-400 hover:text-dark-200 transition-colors"
+              className="p-2 bg-white/[0.02] border border-white/[0.06] hover:bg-white/[0.06] rounded-xl text-dark-300 hover:text-dark-100 transition-colors"
               title="Refresh suggestions"
             >
               <RefreshCw className={`h-4 w-4 ${loadingAI ? 'animate-spin' : ''}`} />
@@ -171,11 +175,11 @@ export const Home: React.FC = () => {
             {recommendations.map((item) => (
               <div key={item.resource._id} className="relative flex flex-col h-full group">
                 {/* AI Reason Badge overlay */}
-                <div className="absolute top-2 right-2 bg-brand-600/90 text-white text-[9px] font-bold px-2.5 py-1 rounded-full shadow-md backdrop-blur-xs border border-brand-500 z-10 max-w-[200px] truncate">
+                <div className="absolute top-2 right-2 bg-gradient-to-r from-brand-650 to-brand-500 text-white text-[9px] font-extrabold px-3 py-1 rounded-full shadow-lg border border-brand-400/35 z-10 max-w-[200px] truncate uppercase tracking-wider shadow-glow-indigo">
                   AI Suggestion
                 </div>
                 <BookCard resource={item.resource} />
-                <div className="mt-2.5 p-3 rounded-xl bg-brand-500/5 border border-brand-500/10 text-[11px] text-brand-300 italic text-left">
+                <div className="mt-3 p-3.5 rounded-2xl bg-brand-500/5 border border-brand-500/10 text-xs text-brand-300 italic text-left leading-relaxed">
                   {item.reason}
                 </div>
               </div>
@@ -185,22 +189,26 @@ export const Home: React.FC = () => {
       )}
 
       {/* SEARCH AND GRID CATALOG SECTION */}
-      <div id="browse-catalog" className="flex flex-col lg:flex-row gap-8 items-start text-left">
+      <div id="browse-catalog" className="flex flex-col lg:flex-row gap-8 items-start text-left pt-6">
         {/* Filters Sidebar - Desktop */}
-        <aside className="hidden lg:block w-64 shrink-0 glass-card p-6 divide-y divide-dark-850">
+        <aside className="hidden lg:block w-64 shrink-0 glass-card p-6 divide-y divide-white/[0.06] border border-white/[0.05] bg-dark-900/20">
           <div className="pb-5">
-            <div className="flex items-center justify-between mb-4">
-              <span className="font-bold flex items-center gap-2"><Filter className="h-4 w-4" /> Filters</span>
-              <button onClick={clearFilters} className="text-xs text-brand-400 hover:text-brand-300 font-medium">Clear All</button>
+            <div className="flex items-center justify-between mb-5">
+              <span className="font-bold text-xs uppercase tracking-wider flex items-center gap-2 text-dark-200">
+                <Filter className="h-4 w-4 text-brand-400" /> Filters
+              </span>
+              <button onClick={clearFilters} className="text-xs text-brand-400 hover:text-brand-300 font-bold uppercase tracking-wider">
+                Clear All
+              </button>
             </div>
             
             {/* Dept Filter */}
-            <div className="flex flex-col gap-2.5">
-              <label className="text-xs font-bold text-dark-400">Department</label>
+            <div className="flex flex-col gap-2">
+              <label className="text-[10px] font-bold text-dark-450 uppercase tracking-wider">Department</label>
               <select 
                 value={selectedDept} 
                 onChange={(e) => setSelectedDept(e.target.value)}
-                className="glass-input py-2 text-xs bg-dark-950"
+                className="glass-input py-2 text-xs bg-dark-900/60 border-white/[0.06]"
               >
                 <option value="">All Departments</option>
                 {departments.map(d => <option key={d} value={d}>{d}</option>)}
@@ -208,12 +216,12 @@ export const Home: React.FC = () => {
             </div>
 
             {/* Semester Filter */}
-            <div className="flex flex-col gap-2.5 mt-4">
-              <label className="text-xs font-bold text-dark-400">Semester</label>
+            <div className="flex flex-col gap-2 mt-5">
+              <label className="text-[10px] font-bold text-dark-450 uppercase tracking-wider">Semester</label>
               <select 
                 value={selectedSem} 
                 onChange={(e) => setSelectedSem(e.target.value)}
-                className="glass-input py-2 text-xs bg-dark-950"
+                className="glass-input py-2 text-xs bg-dark-900/60 border-white/[0.06]"
               >
                 <option value="">All Semesters</option>
                 {[1,2,3,4,5,6,7,8].map(s => <option key={s} value={s}>Semester {s}</option>)}
@@ -221,12 +229,12 @@ export const Home: React.FC = () => {
             </div>
 
             {/* Type Filter */}
-            <div className="flex flex-col gap-2.5 mt-4">
-              <label className="text-xs font-bold text-dark-400">Resource Type</label>
+            <div className="flex flex-col gap-2 mt-5">
+              <label className="text-[10px] font-bold text-dark-450 uppercase tracking-wider">Resource Type</label>
               <select 
                 value={selectedType} 
                 onChange={(e) => setSelectedType(e.target.value)}
-                className="glass-input py-2 text-xs bg-dark-950"
+                className="glass-input py-2 text-xs bg-dark-900/60 border-white/[0.06]"
               >
                 <option value="">All Types</option>
                 {resourceTypes.map(t => <option key={t} value={t}>{t}</option>)}
@@ -234,12 +242,12 @@ export const Home: React.FC = () => {
             </div>
 
             {/* Exchange Filter */}
-            <div className="flex flex-col gap-2.5 mt-4">
-              <label className="text-xs font-bold text-dark-400">Exchange Mode</label>
+            <div className="flex flex-col gap-2 mt-5">
+              <label className="text-[10px] font-bold text-dark-450 uppercase tracking-wider">Exchange Mode</label>
               <select 
                 value={selectedExchange} 
                 onChange={(e) => setSelectedExchange(e.target.value)}
-                className="glass-input py-2 text-xs bg-dark-950"
+                className="glass-input py-2 text-xs bg-dark-900/60 border-white/[0.06]"
               >
                 <option value="">All Modes</option>
                 {exchangeTypes.map(e => <option key={e} value={e}>{e}</option>)}
@@ -247,12 +255,12 @@ export const Home: React.FC = () => {
             </div>
 
             {/* Condition Filter */}
-            <div className="flex flex-col gap-2.5 mt-4">
-              <label className="text-xs font-bold text-dark-400">Condition</label>
+            <div className="flex flex-col gap-2 mt-5">
+              <label className="text-[10px] font-bold text-dark-450 uppercase tracking-wider">Condition</label>
               <select 
                 value={selectedCondition} 
                 onChange={(e) => setSelectedCondition(e.target.value)}
-                className="glass-input py-2 text-xs bg-dark-950"
+                className="glass-input py-2 text-xs bg-dark-900/60 border-white/[0.06]"
               >
                 <option value="">Any Condition</option>
                 {conditions.map(c => <option key={c} value={c}>{c}</option>)}
@@ -266,16 +274,16 @@ export const Home: React.FC = () => {
           {/* Search Header */}
           <form onSubmit={handleSearchSubmit} className="flex gap-3 mb-6">
             <div className="relative flex-grow">
-              <Search className="absolute left-3.5 top-3.5 h-4.5 w-4.5 text-dark-500" />
+              <Search className="absolute left-4 top-3.5 h-4.5 w-4.5 text-dark-450" />
               <input
                 type="text"
                 placeholder="Search title, authors, course codes (e.g. CS-301)..."
-                className="glass-input pl-11"
+                className="glass-input pl-12 border-white/[0.06] focus:ring-brand-500/20 text-sm"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
             </div>
-            <button type="submit" className="glass-btn-primary px-6 flex items-center gap-2 text-sm shrink-0">
+            <button type="submit" className="glass-btn-primary px-6 flex items-center gap-2 text-xs font-bold uppercase tracking-wider shrink-0 hover:-translate-y-0.5 active:translate-y-0">
               <Search className="h-4 w-4" /> Search
             </button>
             <button 
@@ -289,32 +297,32 @@ export const Home: React.FC = () => {
 
           {/* Mobile Filter Sheet */}
           {showMobileFilters && (
-            <div className="lg:hidden glass-card p-6 mb-6 flex flex-col gap-4 animate-fade-in">
-              <div className="flex items-center justify-between border-b border-dark-800 pb-3">
-                <span className="font-bold">Filters</span>
+            <div className="lg:hidden glass-card p-6 mb-6 flex flex-col gap-4 animate-fade-in border-white/[0.06]">
+              <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
+                <span className="font-bold text-xs uppercase tracking-wider text-dark-200">Filters</span>
                 <button onClick={() => setShowMobileFilters(false)} className="text-dark-400 hover:text-dark-100">
                   <X className="h-5 w-5" />
                 </button>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <select value={selectedDept} onChange={(e) => setSelectedDept(e.target.value)} className="glass-input text-xs bg-dark-950">
+                <select value={selectedDept} onChange={(e) => setSelectedDept(e.target.value)} className="glass-input text-xs bg-dark-900 border-white/[0.06]">
                   <option value="">All Departments</option>
                   {departments.map(d => <option key={d} value={d}>{d}</option>)}
                 </select>
-                <select value={selectedSem} onChange={(e) => setSelectedSem(e.target.value)} className="glass-input text-xs bg-dark-950">
+                <select value={selectedSem} onChange={(e) => setSelectedSem(e.target.value)} className="glass-input text-xs bg-dark-900 border-white/[0.06]">
                   <option value="">All Semesters</option>
                   {[1,2,3,4,5,6,7,8].map(s => <option key={s} value={s}>Semester {s}</option>)}
                 </select>
-                <select value={selectedType} onChange={(e) => setSelectedType(e.target.value)} className="glass-input text-xs bg-dark-950">
+                <select value={selectedType} onChange={(e) => setSelectedType(e.target.value)} className="glass-input text-xs bg-dark-900 border-white/[0.06]">
                   <option value="">All Types</option>
                   {resourceTypes.map(t => <option key={t} value={t}>{t}</option>)}
                 </select>
-                <select value={selectedExchange} onChange={(e) => setSelectedExchange(e.target.value)} className="glass-input text-xs bg-dark-950">
+                <select value={selectedExchange} onChange={(e) => setSelectedExchange(e.target.value)} className="glass-input text-xs bg-dark-900 border-white/[0.06]">
                   <option value="">All Modes</option>
                   {exchangeTypes.map(e => <option key={e} value={e}>{e}</option>)}
                 </select>
               </div>
-              <button onClick={clearFilters} className="glass-btn-secondary text-xs w-full">Clear Filters</button>
+              <button onClick={clearFilters} className="glass-btn-secondary text-xs w-full uppercase font-bold tracking-wider py-2.5">Clear Filters</button>
             </div>
           )}
 
@@ -322,32 +330,32 @@ export const Home: React.FC = () => {
           {loading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
               {[...Array(6)].map((_, index) => (
-                <div key={index} className="glass-card p-5 flex flex-col gap-4 animate-pulse border border-dark-850">
-                  <div className="bg-dark-800/40 rounded-xl aspect-[4/3] w-full" />
+                <div key={index} className="glass-card p-5 flex flex-col gap-4 animate-pulse border border-white/[0.05]">
+                  <div className="bg-white/[0.02] rounded-xl aspect-[4/3] w-full" />
                   <div className="flex flex-col gap-2.5">
-                    <div className="h-3 bg-dark-800/40 rounded w-1/3" />
-                    <div className="h-4 bg-dark-800/40 rounded w-3/4" />
-                    <div className="h-3 bg-dark-800/40 rounded w-1/2" />
+                    <div className="h-3 bg-white/[0.03] rounded w-1/3" />
+                    <div className="h-4 bg-white/[0.03] rounded w-3/4" />
+                    <div className="h-3 bg-white/[0.03] rounded w-1/2" />
                   </div>
-                  <div className="h-[1px] bg-dark-800/40" />
+                  <div className="h-[1px] bg-white/[0.05]" />
                   <div className="flex justify-between items-center pt-2">
                     <div className="flex flex-col gap-1.5">
-                      <div className="h-2 bg-dark-800/40 rounded w-12" />
-                      <div className="h-3.5 bg-dark-800/40 rounded w-16" />
+                      <div className="h-2 bg-white/[0.03] rounded w-12" />
+                      <div className="h-3.5 bg-white/[0.03] rounded w-16" />
                     </div>
                     <div className="flex flex-col gap-1.5 text-right">
-                      <div className="h-2 bg-dark-800/40 rounded w-12" />
-                      <div className="h-3.5 bg-dark-800/40 rounded w-16" />
+                      <div className="h-2 bg-white/[0.03] rounded w-12" />
+                      <div className="h-3.5 bg-white/[0.03] rounded w-16" />
                     </div>
                   </div>
                 </div>
               ))}
             </div>
           ) : resources.length === 0 ? (
-            <div className="text-center py-20 rounded-3xl bg-dark-900/20 border border-dark-800 border-dashed">
+            <div className="text-center py-20 rounded-3xl bg-dark-900/10 border border-white/[0.05] border-dashed">
               <BookOpen className="h-10 w-10 text-dark-500 mx-auto mb-4" />
-              <h3 className="font-outfit text-lg font-bold text-dark-200">No resources found</h3>
-              <p className="text-xs text-dark-500 mt-1 max-w-sm mx-auto">
+              <h3 className="font-outfit text-base font-extrabold text-dark-200 uppercase tracking-wide">No resources found</h3>
+              <p className="text-xs text-dark-500 mt-1 max-w-sm mx-auto leading-relaxed">
                 No active listings match your current filters. Try adjusting your keywords or department selectors.
               </p>
             </div>

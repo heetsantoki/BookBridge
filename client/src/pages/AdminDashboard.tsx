@@ -123,21 +123,21 @@ export const AdminDashboard: React.FC = () => {
   const maxPopularCount = Math.max(...popularResources.map((p: any) => p.requestCount), 1);
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 text-left">
-      <div className="flex items-center justify-between mb-8 border-b border-dark-850 pb-5">
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 text-left animate-fade-in">
+      <div className="flex items-center justify-between mb-8 border-b border-white/[0.06] pb-5">
         <div className="flex items-center gap-3">
           <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-tr from-brand-600 to-red-500 shadow-glass-primary animate-pulse-slow">
             <ShieldAlert className="h-5 w-5 text-white" />
           </div>
           <div>
             <h1 className="font-outfit text-2xl font-extrabold text-white">Administrator Portal</h1>
-            <p className="text-xs text-dark-400 font-medium">Platform health diagnostics, student credentials audits, and directory statistics</p>
+            <p className="text-xs text-dark-400 font-medium mt-0.5">Platform health diagnostics, student credentials audits, and directory statistics</p>
           </div>
         </div>
         <button
           onClick={fetchAdminData}
           disabled={refreshing}
-          className="glass-btn-secondary py-2 px-4 text-xs flex items-center gap-1.5"
+          className="glass-btn-secondary py-2 px-4 text-xs flex items-center gap-1.5 hover:-translate-y-0.5"
         >
           <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? 'animate-spin' : ''}`} /> Refresh Data
         </button>
@@ -146,43 +146,43 @@ export const AdminDashboard: React.FC = () => {
       {/* METRIC BOX CAROUSEL GRID */}
       {stats && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-          <div className="glass-card p-6 flex items-center justify-between">
+          <div className="glass-card p-6 flex items-center justify-between border-white/[0.05] bg-dark-900/10">
             <div className="text-left">
-              <span className="text-[10px] text-dark-500 font-bold uppercase tracking-wider">Total User Registrations</span>
-              <p className="text-2xl font-extrabold text-white mt-1">{stats.totalUsers}</p>
+              <span className="text-[9px] text-dark-500 font-bold uppercase tracking-widest">Total Users</span>
+              <p className="text-2xl font-extrabold text-white mt-1.5">{stats.totalUsers}</p>
             </div>
-            <div className="h-11 w-11 bg-brand-500/10 text-brand-400 rounded-xl flex items-center justify-center border border-brand-500/25">
+            <div className="h-11 w-11 bg-brand-500/10 text-brand-400 rounded-xl flex items-center justify-center border border-brand-500/20 shadow-glow-indigo">
               <Users className="h-5 w-5" />
             </div>
           </div>
 
-          <div className="glass-card p-6 flex items-center justify-between">
+          <div className="glass-card p-6 flex items-center justify-between border-white/[0.05] bg-dark-900/10">
             <div className="text-left">
-              <span className="text-[10px] text-dark-500 font-bold uppercase tracking-wider">Active Academic Resources</span>
-              <p className="text-2xl font-extrabold text-white mt-1">{stats.totalResources}</p>
+              <span className="text-[9px] text-dark-500 font-bold uppercase tracking-widest">Active Listings</span>
+              <p className="text-2xl font-extrabold text-white mt-1.5">{stats.totalResources}</p>
             </div>
-            <div className="h-11 w-11 bg-accent-500/10 text-accent-400 rounded-xl flex items-center justify-center border border-accent-500/25">
+            <div className="h-11 w-11 bg-emerald-500/10 text-emerald-400 rounded-xl flex items-center justify-center border border-emerald-500/20 shadow-glow-emerald">
               <BookOpen className="h-5 w-5" />
             </div>
           </div>
 
-          <div className="glass-card p-6 flex items-center justify-between">
+          <div className="glass-card p-6 flex items-center justify-between border-white/[0.05] bg-dark-900/10">
             <div className="text-left">
-              <span className="text-[10px] text-dark-500 font-bold uppercase tracking-wider">Exchanges Initiated</span>
-              <p className="text-2xl font-extrabold text-white mt-1">{stats.totalTransactions}</p>
+              <span className="text-[9px] text-dark-500 font-bold uppercase tracking-widest">Exchanges Initiated</span>
+              <p className="text-2xl font-extrabold text-white mt-1.5">{stats.totalTransactions}</p>
             </div>
-            <div className="h-11 w-11 bg-sky-500/10 text-sky-400 rounded-xl flex items-center justify-center border border-sky-500/25">
+            <div className="h-11 w-11 bg-sky-500/10 text-sky-400 rounded-xl flex items-center justify-center border border-sky-500/20 shadow-glow-sky">
               <MessageSquare className="h-5 w-5" />
             </div>
           </div>
 
-          <div className="glass-card p-6 flex items-center justify-between">
+          <div className="glass-card p-6 flex items-center justify-between border-white/[0.05] bg-dark-900/10">
             <div className="text-left">
-              <span className="text-[10px] text-dark-500 font-bold uppercase tracking-wider">Verification Queue</span>
-              <p className="text-2xl font-extrabold text-amber-400 mt-1">{stats.pendingVerifications}</p>
+              <span className="text-[9px] text-dark-500 font-bold uppercase tracking-widest">Verification Queue</span>
+              <p className="text-2xl font-extrabold text-amber-400 mt-1.5">{stats.pendingVerifications}</p>
             </div>
-            <div className="h-11 w-11 bg-amber-500/10 text-amber-400 rounded-xl flex items-center justify-center border border-amber-500/25">
-              <Clock className="h-5 w-5" />
+            <div className="h-11 w-11 bg-amber-500/10 text-amber-400 rounded-xl flex items-center justify-center border border-amber-500/20 shadow-glow-amber">
+              <Clock className="h-5 w-5 animate-pulse" />
             </div>
           </div>
         </div>
@@ -192,62 +192,62 @@ export const AdminDashboard: React.FC = () => {
         
         {/* LEFT COLUMN: Student ID verification queue */}
         <section className="lg:col-span-7 flex flex-col gap-6">
-          <div className="glass-card p-6">
-            <h3 className="text-sm font-bold text-dark-200 border-b border-dark-850 pb-3 mb-4 flex items-center gap-1.5">
-              <Clock className="h-4.5 w-4.5 text-amber-400" /> Student Verification Queue ({verifications.length})
+          <div className="glass-card p-6 border-white/[0.05] bg-dark-900/10">
+            <h3 className="text-xs font-bold text-dark-200 border-b border-white/[0.06] pb-3.5 mb-4 flex items-center gap-2 uppercase tracking-wider">
+              <Clock className="h-4.5 w-4.5 text-amber-400 animate-pulse" /> Student Verification Queue ({verifications.length})
             </h3>
 
             {verifications.length === 0 ? (
-              <div className="text-center py-16 text-xs text-dark-500">
+              <div className="text-center py-20 text-xs text-dark-500 font-bold uppercase tracking-wider italic">
                 All verification requests have been cleared. Queue is currently empty.
               </div>
             ) : (
               <div className="flex flex-col gap-5">
                 {verifications.map((student) => (
-                  <div key={student._id} className="p-4 bg-dark-950/40 border border-dark-850 rounded-2xl flex flex-col gap-4">
+                  <div key={student._id} className="p-5 bg-white/[0.02] border border-white/[0.05] rounded-2xl flex flex-col gap-4 shadow-sm">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <img src={student.avatar} alt="" className="h-9 w-9 rounded-lg bg-dark-800" />
+                        <img src={student.avatar} alt="" className="h-9 w-9 rounded-lg bg-dark-950 border border-white/[0.06] object-cover" />
                         <div className="text-left">
-                          <span className="text-xs font-bold text-dark-100 block">{student.name}</span>
-                          <span className="text-[10px] text-dark-450">{student.email}</span>
+                          <span className="text-xs font-extrabold text-dark-100 block">{student.name}</span>
+                          <span className="text-[10px] text-dark-450 block mt-0.5">{student.email}</span>
                         </div>
                       </div>
-                      <span className="text-[9px] text-dark-500">
+                      <span className="text-[10px] text-dark-500 font-bold uppercase tracking-wider">
                         {new Date(student.createdAt).toLocaleDateString()}
                       </span>
                     </div>
 
                     {/* ID Card Image Viewer */}
                     {student.studentIdImage && (
-                      <div className="relative border border-dark-850 rounded-xl overflow-hidden aspect-[16/9] w-full bg-dark-900 flex items-center justify-center group">
+                      <div className="relative border border-white/[0.06] rounded-xl overflow-hidden aspect-[16/9] w-full bg-dark-950 flex items-center justify-center group shadow-inner">
                         <img
                           src={getImageUrl(student.studentIdImage)}
                           alt="Student ID Card Upload"
-                          className="h-full w-full object-contain"
+                          className="h-full w-full object-contain p-2"
                         />
                         <a 
                           href={student.studentIdImage} 
                           target="_blank" 
                           rel="noreferrer"
-                          className="absolute bottom-3 right-3 bg-black/75 hover:bg-black text-[10px] text-white py-1.5 px-3 rounded-lg border border-dark-800 font-bold flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                          className="absolute bottom-3 right-3 bg-black/75 hover:bg-black text-[9px] text-white py-1.5 px-3 rounded-lg border border-white/[0.08] font-bold uppercase tracking-wider flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                         >
-                          Enlarge ID <ArrowUpRight className="h-3 w-3" />
+                          Enlarge ID <ArrowUpRight className="h-3.5 w-3.5" />
                         </a>
                       </div>
                     )}
 
                     {/* Action buttons */}
-                    <div className="flex gap-3 justify-end border-t border-dark-900/60 pt-3">
+                    <div className="flex gap-3 justify-end border-t border-white/[0.04] pt-3.5">
                       <button
                         onClick={() => handleVerify(student._id, 'approve')}
-                        className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1.5 px-4 rounded-xl text-xs uppercase flex items-center gap-1 shadow"
+                        className="bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold py-1.5 px-4 rounded-xl text-[10px] uppercase tracking-wider flex items-center gap-1 shadow-md shadow-emerald-650/10 transition-all duration-200"
                       >
                         <CheckCircle2 className="h-4 w-4" /> Approve
                       </button>
                       <button
                         onClick={() => handleVerify(student._id, 'reject')}
-                        className="bg-dark-950 border border-dark-800 text-red-400 hover:bg-red-500/5 font-bold py-1.5 px-4 rounded-xl text-xs uppercase flex items-center gap-1"
+                        className="bg-white/[0.02] border border-white/[0.08] text-red-400 hover:text-red-300 font-bold py-1.5 px-4 rounded-xl text-[10px] uppercase tracking-wider flex items-center gap-1 transition-all duration-200"
                       >
                         <XCircle className="h-4 w-4" /> Decline
                       </button>
@@ -262,25 +262,25 @@ export const AdminDashboard: React.FC = () => {
         {/* RIGHT COLUMN: Directory analytics */}
         <section className="lg:col-span-5 flex flex-col gap-6">
           {/* Department uploads chart */}
-          <div className="glass-card p-6">
-            <h3 className="text-sm font-bold text-dark-200 border-b border-dark-850 pb-3 mb-4 flex items-center gap-1.5">
+          <div className="glass-card p-6 border-white/[0.05] bg-dark-900/10">
+            <h3 className="text-xs font-bold text-dark-200 border-b border-white/[0.06] pb-3.5 mb-4 flex items-center gap-2 uppercase tracking-wider">
               <BarChart3 className="h-4.5 w-4.5 text-brand-400" /> Department Distribution
             </h3>
             {deptCounts.length === 0 ? (
-              <div className="text-xs text-dark-500 py-8 text-center">No uploads recorded</div>
+              <div className="text-xs text-dark-500 py-8 text-center italic">No uploads recorded</div>
             ) : (
               <div className="flex flex-col gap-4">
                 {deptCounts.map((dept: any) => {
                   const percentage = Math.round((dept.count / maxDeptCount) * 100);
                   return (
-                    <div key={dept._id} className="flex flex-col gap-1 text-left">
-                      <div className="flex justify-between text-xs font-semibold">
-                        <span className="text-dark-300 max-w-[200px] truncate">{dept._id || 'General'}</span>
-                        <span className="text-dark-400 font-bold">{dept.count} item{dept.count !== 1 && 's'}</span>
+                    <div key={dept._id} className="flex flex-col gap-1.5 text-left">
+                      <div className="flex justify-between text-[11px] font-semibold">
+                        <span className="text-dark-250 font-bold max-w-[180px] truncate" title={dept._id}>{dept._id || 'General'}</span>
+                        <span className="text-dark-450 font-bold uppercase tracking-wider">{dept.count} item{dept.count !== 1 && 's'}</span>
                       </div>
-                      <div className="w-full bg-dark-950 rounded-full h-2 overflow-hidden border border-dark-850">
+                      <div className="w-full bg-dark-950 rounded-full h-2 overflow-hidden border border-white/[0.06]">
                         <div 
-                          className="bg-brand-500 h-full rounded-full transition-all duration-500" 
+                          className="bg-brand-500 h-full rounded-full transition-all duration-500 shadow-glow-indigo" 
                           style={{ width: `${percentage}%` }}
                         />
                       </div>
@@ -292,26 +292,26 @@ export const AdminDashboard: React.FC = () => {
           </div>
 
           {/* Most requested listings chart */}
-          <div className="glass-card p-6">
-            <h3 className="text-sm font-bold text-dark-200 border-b border-dark-850 pb-3 mb-4 flex items-center gap-1.5">
-              <Award className="h-4.5 w-4.5 text-accent-400" /> Most Requested Resources
+          <div className="glass-card p-6 border-white/[0.05] bg-dark-900/10">
+            <h3 className="text-xs font-bold text-dark-200 border-b border-white/[0.06] pb-3.5 mb-4 flex items-center gap-2 uppercase tracking-wider">
+              <Award className="h-4.5 w-4.5 text-accent-400 animate-pulse" /> Most Popular Resources
             </h3>
             {popularResources.length === 0 ? (
-              <div className="text-xs text-dark-500 py-8 text-center">No trades request recorded</div>
+              <div className="text-xs text-dark-500 py-8 text-center italic">No trade requests recorded</div>
             ) : (
               <div className="flex flex-col gap-4">
                 {popularResources.map((item: any) => {
                   const percentage = Math.round((item.requestCount / maxPopularCount) * 100);
                   const resourceName = item.resource?.title || 'Unknown Resource';
                   return (
-                    <div key={item.resource?._id || Math.random()} className="flex flex-col gap-1 text-left">
-                      <div className="flex justify-between text-xs font-semibold">
-                        <span className="text-dark-300 truncate max-w-[220px]">{resourceName}</span>
-                        <span className="text-accent-400 font-bold">{item.requestCount} request{item.requestCount !== 1 && 's'}</span>
+                    <div key={item.resource?._id || Math.random()} className="flex flex-col gap-1.5 text-left">
+                      <div className="flex justify-between text-[11px] font-semibold">
+                        <span className="text-dark-250 font-bold truncate max-w-[200px]" title={resourceName}>{resourceName}</span>
+                        <span className="text-accent-400 font-bold uppercase tracking-wider">{item.requestCount} req{item.requestCount !== 1 && 's'}</span>
                       </div>
-                      <div className="w-full bg-dark-950 rounded-full h-2 overflow-hidden border border-dark-850">
+                      <div className="w-full bg-dark-950 rounded-full h-2 overflow-hidden border border-white/[0.06]">
                         <div 
-                          className="bg-accent-500 h-full rounded-full transition-all duration-500" 
+                          className="bg-accent-500 h-full rounded-full transition-all duration-500 shadow-glow-emerald" 
                           style={{ width: `${percentage}%` }}
                         />
                       </div>

@@ -82,7 +82,7 @@ io.on('connection', (socket) => {
   // Broadcast messages to participants in real-time
   socket.on('new_message', (message) => {
     const { conversationId, receiver, sender, content } = message;
-    
+
     // Broadcast message to the chat room (excluding sender)
     socket.in(conversationId).emit('message_received', message);
 
@@ -115,7 +115,9 @@ io.on('connection', (socket) => {
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/bookbridge';
 mongoose.connect(MONGODB_URI)
   .then(() => {
-    console.log('MongoDB successfully connected.');
+    const dbName = mongoose.connection.name;
+    const hostName = mongoose.connection.host;
+    console.log(`MongoDB successfully connected. Host: ${hostName}, Database: ${dbName}`);
     // Start Server
     const PORT = process.env.PORT || 5000;
     server.listen(PORT, () => {

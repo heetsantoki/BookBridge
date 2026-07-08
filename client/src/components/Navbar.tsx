@@ -106,16 +106,16 @@ export const Navbar: React.FC = () => {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <nav className="sticky top-0 z-40 w-full border-b border-dark-800/80 bg-dark-950/80 backdrop-blur-md">
+    <nav className="sticky top-0 z-50 w-full border-b border-white/[0.06] bg-dark-950/60 backdrop-blur-xl transition-all duration-300">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <div className="flex items-center">
-            <Link to="/" className="flex items-center gap-2.5">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-brand-600 to-accent-500 shadow-glass-primary">
+            <Link to="/" className="flex items-center gap-2.5 group">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-brand-500 to-accent-500 shadow-glass-primary group-hover:scale-105 transition-all duration-300">
                 <BookOpen className="h-5 w-5 text-white animate-pulse-slow" />
               </div>
-              <span className="font-outfit text-xl font-extrabold tracking-tight bg-gradient-to-r from-brand-300 via-brand-100 to-accent-400 bg-clip-text text-transparent">
+              <span className="font-outfit text-xl font-extrabold tracking-tight bg-gradient-to-r from-brand-300 via-brand-100 to-accent-400 bg-clip-text text-transparent group-hover:opacity-90 transition-opacity">
                 BookBridge
               </span>
             </Link>
@@ -123,58 +123,70 @@ export const Navbar: React.FC = () => {
 
           {/* Navigation Links */}
           {user && (
-            <div className="hidden md:flex items-center gap-6">
+            <div className="hidden md:flex items-center gap-4">
               <Link
                 to="/"
-                className={`text-sm font-semibold transition-colors duration-200 ${
-                  isActive('/') ? 'text-brand-400' : 'text-dark-300 hover:text-dark-100'
+                className={`text-[11px] font-bold uppercase tracking-wider transition-all duration-200 relative py-2 px-3 rounded-lg hover:bg-white/[0.02] ${
+                  isActive('/') ? 'text-brand-400 font-extrabold' : 'text-dark-300 hover:text-dark-100'
                 }`}
               >
                 Browse Resources
+                {isActive('/') && (
+                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-brand-500 shadow-glow-indigo animate-pulse" />
+                )}
               </Link>
               <Link
                 to="/dashboard"
-                className={`text-sm font-semibold transition-colors duration-200 ${
-                  isActive('/dashboard') ? 'text-brand-400' : 'text-dark-300 hover:text-dark-100'
+                className={`text-[11px] font-bold uppercase tracking-wider transition-all duration-200 relative py-2 px-3 rounded-lg hover:bg-white/[0.02] ${
+                  isActive('/dashboard') ? 'text-brand-400 font-extrabold' : 'text-dark-300 hover:text-dark-100'
                 }`}
               >
                 My Exchanges
+                {isActive('/dashboard') && (
+                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-brand-500 shadow-glow-indigo animate-pulse" />
+                )}
               </Link>
               <Link
                 to="/chat"
-                className={`text-sm font-semibold transition-colors duration-200 flex items-center gap-1.5 ${
-                  isActive('/chat') ? 'text-brand-400' : 'text-dark-300 hover:text-dark-100'
+                className={`text-[11px] font-bold uppercase tracking-wider transition-all duration-200 relative py-2 px-3 rounded-lg hover:bg-white/[0.02] flex items-center gap-1.5 ${
+                  isActive('/chat') ? 'text-brand-400 font-extrabold' : 'text-dark-300 hover:text-dark-100'
                 }`}
               >
                 Chat
                 {unreadMsgCount > 0 && (
-                  <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-brand-500 px-1 text-[10px] font-bold text-white">
+                  <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-brand-500 px-1 text-[9px] font-extrabold text-white shadow-glow-indigo animate-pulse">
                     {unreadMsgCount}
                   </span>
+                )}
+                {isActive('/chat') && (
+                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-brand-500 shadow-glow-indigo animate-pulse" />
                 )}
               </Link>
               {user.role === 'admin' && (
                 <Link
                   to="/admin"
-                  className={`text-sm font-semibold transition-colors duration-200 flex items-center gap-1.5 ${
-                    isActive('/admin') ? 'text-red-400' : 'text-dark-300 hover:text-red-300'
+                  className={`text-[11px] font-bold uppercase tracking-wider transition-all duration-200 relative py-2 px-3 rounded-lg hover:bg-red-500/5 flex items-center gap-1.5 ${
+                    isActive('/admin') ? 'text-red-400 font-extrabold' : 'text-dark-300 hover:text-red-400'
                   }`}
                 >
                   <ShieldAlert className="h-4 w-4" />
                   Admin Portal
+                  {isActive('/admin') && (
+                    <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-red-400 shadow-lg animate-pulse" />
+                  )}
                 </Link>
               )}
             </div>
           )}
 
           {/* Right Actions */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             {user ? (
               <>
                 {/* Share Resource Button */}
                 <Link
                   to="/create-listing"
-                  className="hidden sm:inline-flex items-center gap-1.5 glass-btn-primary !py-1.5 !px-3.5 !text-xs font-bold"
+                  className="hidden sm:inline-flex items-center gap-1.5 glass-btn-primary !py-2 !px-4 !text-[11px] font-bold uppercase tracking-wider hover:-translate-y-0.5 active:translate-y-0"
                 >
                   <Plus className="h-3.5 w-3.5" /> Share Resource
                 </Link>
@@ -186,27 +198,27 @@ export const Navbar: React.FC = () => {
                       setShowNotifications(!showNotifications);
                       if (!showNotifications) markAllNotificationsAsRead();
                     }}
-                    className="relative p-2 text-dark-300 hover:text-dark-100 transition-colors duration-200 hover:bg-dark-900/60 rounded-xl"
+                    className="relative p-2.5 text-dark-300 hover:text-dark-100 transition-all duration-200 hover:bg-white/[0.03] border border-transparent hover:border-white/[0.05] rounded-xl"
                   >
                     <Bell className="h-5 w-5" />
                     {unreadNotifsCount > 0 && (
-                      <span className="absolute top-1.5 right-1.5 h-2.5 w-2.5 rounded-full bg-accent-500 ring-2 ring-dark-950 animate-ping" />
+                      <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-accent-500 ring-2 ring-dark-950 animate-ping shadow-glow-emerald" />
                     )}
                   </button>
 
                   {showNotifications && (
-                    <div className="absolute right-0 mt-2 w-80 origin-top-right rounded-2xl border border-dark-800 bg-dark-900 shadow-glass backdrop-blur-lg overflow-hidden animate-slide-up">
-                      <div className="px-4 py-3 border-b border-dark-800 flex items-center justify-between">
-                        <span className="text-sm font-bold">Notifications</span>
+                    <div className="absolute right-0 mt-3 w-80 origin-top-right rounded-2xl border border-white/[0.08] bg-dark-900/90 shadow-2xl backdrop-blur-xl overflow-hidden animate-slide-up">
+                      <div className="px-4 py-3 border-b border-white/[0.06] flex items-center justify-between">
+                        <span className="text-xs font-bold uppercase tracking-wider text-dark-200">Notifications</span>
                         {unreadNotifsCount > 0 && (
-                          <span className="text-[10px] bg-accent-500/10 text-accent-400 border border-accent-500/25 px-2 py-0.5 rounded-full font-bold">
+                          <span className="text-[9px] bg-accent-500/10 text-accent-400 border border-accent-500/25 px-2 py-0.5 rounded-full font-bold">
                             {unreadNotifsCount} New
                           </span>
                         )}
                       </div>
-                      <div className="max-h-72 overflow-y-auto divide-y divide-dark-800/50">
+                      <div className="max-h-72 overflow-y-auto divide-y divide-white/[0.04]">
                         {localNotifications.length === 0 ? (
-                          <div className="p-4 text-center text-xs text-dark-500">
+                          <div className="p-6 text-center text-xs text-dark-450 italic">
                             No notifications yet
                           </div>
                         ) : (
@@ -214,13 +226,13 @@ export const Navbar: React.FC = () => {
                             <div
                               key={notif._id}
                               onClick={() => handleNotificationClick(notif)}
-                              className={`p-3 text-left hover:bg-dark-800/40 cursor-pointer transition-colors duration-200 flex flex-col gap-0.5 ${
+                              className={`p-3.5 text-left hover:bg-white/[0.02] cursor-pointer transition-colors duration-200 flex flex-col gap-1 ${
                                 !notif.isRead ? 'bg-brand-500/5' : ''
                               }`}
                             >
                               <span className="text-xs font-bold text-dark-100">{notif.title}</span>
-                              <span className="text-[11px] text-dark-400 leading-normal">{notif.message}</span>
-                              <span className="text-[9px] text-dark-500 self-end mt-1">
+                              <span className="text-[11px] text-dark-400 leading-relaxed">{notif.message}</span>
+                              <span className="text-[9px] text-dark-500 self-end mt-1 font-medium">
                                 {new Date(notif.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                               </span>
                             </div>
@@ -235,56 +247,56 @@ export const Navbar: React.FC = () => {
                 <div className="relative" ref={profileRef}>
                   <button
                     onClick={() => setShowProfileMenu(!showProfileMenu)}
-                    className="flex items-center gap-2 p-1.5 hover:bg-dark-900/60 rounded-xl transition-all duration-200 border border-transparent hover:border-dark-800"
+                    className="flex items-center gap-2.5 p-1.5 hover:bg-white/[0.03] rounded-xl transition-all duration-200 border border-transparent hover:border-white/[0.05]"
                   >
                     <img
                       src={user.avatar}
                       alt="avatar"
-                      className="h-8 w-8 rounded-lg bg-dark-800 object-cover"
+                      className="h-8 w-8 rounded-lg bg-dark-800 object-cover border border-white/[0.08]"
                     />
                     <div className="hidden sm:flex flex-col text-left">
-                      <span className="text-xs font-bold leading-tight">{user.name}</span>
-                      <span className="text-[10px] text-dark-400 leading-none">
-                        {user.isVerified ? 'Verified Student' : 'Unverified'}
+                      <span className="text-xs font-bold leading-tight text-dark-100">{user.name}</span>
+                      <span className="text-[9px] text-dark-450 font-bold uppercase tracking-wider mt-0.5">
+                        {user.isVerified ? 'Verified' : 'Unverified'}
                       </span>
                     </div>
-                    <ChevronDown className="h-4 w-4 text-dark-400" />
+                    <ChevronDown className="h-4 w-4 text-dark-450" />
                   </button>
 
                   {showProfileMenu && (
-                    <div className="absolute right-0 mt-2 w-56 origin-top-right rounded-2xl border border-dark-800 bg-dark-900 shadow-glass backdrop-blur-lg overflow-hidden divide-y divide-dark-800 animate-slide-up">
-                      <div className="px-4 py-3">
-                        <p className="text-xs text-dark-400">Signed in as</p>
-                        <p className="text-sm font-bold truncate text-dark-100">{user.email}</p>
+                    <div className="absolute right-0 mt-3 w-56 origin-top-right rounded-2xl border border-white/[0.08] bg-dark-900/90 shadow-2xl backdrop-blur-xl overflow-hidden divide-y divide-white/[0.06] animate-slide-up">
+                      <div className="px-4 py-3.5 text-left">
+                        <p className="text-[10px] text-dark-450 font-bold uppercase tracking-wider">Signed in as</p>
+                        <p className="text-xs font-extrabold truncate text-dark-100 mt-0.5">{user.email}</p>
                         {user.isVerified && (
-                          <span className="inline-flex items-center gap-1 mt-1 text-[10px] text-accent-400 font-semibold uppercase tracking-wide bg-accent-500/10 px-2 py-0.5 rounded border border-accent-500/20">
+                          <span className="inline-flex items-center gap-1 mt-2 text-[9px] text-accent-400 font-bold uppercase tracking-wider bg-accent-500/10 px-2 py-0.5 rounded border border-accent-500/20 shadow-glow-emerald">
                             <Award className="h-3 w-3" /> College Verified
                           </span>
                         )}
                       </div>
-                      <div className="py-1">
+                      <div className="py-1 text-left">
                         <Link
                           to="/dashboard"
                           onClick={() => setShowProfileMenu(false)}
-                          className="flex items-center gap-2 px-4 py-2 text-sm text-dark-300 hover:text-dark-100 hover:bg-dark-800/40"
+                          className="flex items-center gap-2 px-4 py-2.5 text-xs font-semibold text-dark-300 hover:text-dark-100 hover:bg-white/[0.02] transition-colors"
                         >
-                          <User className="h-4 w-4" /> My Profile & Listings
+                          <User className="h-4 w-4 text-brand-400" /> My Profile & Listings
                         </Link>
                         <Link
                           to="/chat"
                           onClick={() => setShowProfileMenu(false)}
-                          className="flex items-center gap-2 px-4 py-2 text-sm text-dark-300 hover:text-dark-100 hover:bg-dark-800/40 md:hidden"
+                          className="flex items-center gap-2 px-4 py-2.5 text-xs font-semibold text-dark-300 hover:text-dark-100 hover:bg-white/[0.02] md:hidden transition-colors"
                         >
-                          <MessageSquare className="h-4 w-4" /> Live Chat
+                          <MessageSquare className="h-4 w-4 text-brand-400" /> Live Chat
                         </Link>
                       </div>
-                      <div className="py-1">
+                      <div className="py-1 text-left">
                         <button
                           onClick={() => {
                             setShowProfileMenu(false);
                             logout();
                           }}
-                          className="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/5 text-left"
+                          className="flex w-full items-center gap-2 px-4 py-2.5 text-xs font-bold text-red-400 hover:text-red-300 hover:bg-red-500/5 transition-colors"
                         >
                           <LogOut className="h-4 w-4" /> Sign out
                         </button>
@@ -294,7 +306,7 @@ export const Navbar: React.FC = () => {
                 </div>
               </>
             ) : (
-              <Link to="/auth" className="glass-btn-primary py-2 px-5 text-sm">
+              <Link to="/auth" className="glass-btn-primary !py-2 !px-5 !text-[11px] font-bold uppercase tracking-wider hover:-translate-y-0.5 active:translate-y-0">
                 Get Started
               </Link>
             )}

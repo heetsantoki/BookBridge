@@ -130,43 +130,43 @@ export const Dashboard: React.FC = () => {
   };
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 text-left">
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 text-left animate-fade-in">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
         {/* LEFT COLUMN: Student Profile Info */}
         {user && (
           <div className="lg:col-span-4 flex flex-col gap-6">
-            <div className="glass-card p-6">
+            <div className="glass-card p-6 border-white/[0.05] bg-dark-900/10">
               <div className="flex flex-col items-center text-center">
-                <img src={user.avatar} alt="Avatar" className="h-20 w-20 rounded-2xl bg-dark-950 object-cover shadow-md mb-4" />
-                <h2 className="font-outfit text-lg font-extrabold text-white">{user.name}</h2>
-                <span className="text-xs text-dark-400">{user.email}</span>
+                <img src={user.avatar} alt="Avatar" className="h-20 w-20 rounded-2xl bg-dark-950 object-cover shadow-lg border border-white/[0.08] mb-4" />
+                <h2 className="font-outfit text-base font-extrabold text-white">{user.name}</h2>
+                <span className="text-xs text-dark-400 mt-0.5">{user.email}</span>
                 
                 {/* Verified Badge */}
                 {user.isVerified ? (
-                  <span className="inline-flex items-center gap-1.5 mt-3 text-xs text-accent-400 font-semibold uppercase tracking-wide bg-accent-500/10 px-3 py-1 rounded-full border border-accent-500/20">
-                    <Award className="h-4 w-4" /> Verified Student
+                  <span className="inline-flex items-center gap-1.5 mt-4 text-[9px] text-accent-400 font-bold uppercase tracking-wider bg-accent-500/10 px-3 py-1 rounded-full border border-accent-500/20 shadow-glow-emerald">
+                    <Award className="h-3.5 w-3.5" /> Verified Student
                   </span>
                 ) : (
-                  <span className="inline-flex items-center gap-1.5 mt-3 text-xs text-amber-400 font-semibold uppercase tracking-wide bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20">
-                    <ShieldAlert className="h-4 w-4" /> Unverified Account
+                  <span className="inline-flex items-center gap-1.5 mt-4 text-[9px] text-amber-400 font-bold uppercase tracking-wider bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20 shadow-glow-amber animate-pulse">
+                    <ShieldAlert className="h-3.5 w-3.5" /> Unverified Account
                   </span>
                 )}
               </div>
 
               {/* Department details */}
-              <div className="h-[1px] bg-dark-850/80 my-5" />
-              <div className="flex flex-col gap-3.5 text-xs">
-                <div className="flex justify-between">
-                  <span className="text-dark-500 font-semibold">Department</span>
-                  <span className="text-dark-200 font-bold max-w-[200px] truncate">{user.department || 'Not Filled'}</span>
+              <div className="h-[1px] bg-white/[0.06] my-5" />
+              <div className="flex flex-col gap-4 text-xs">
+                <div className="flex justify-between items-center">
+                  <span className="text-dark-450 font-semibold uppercase tracking-wider text-[9px]">Department</span>
+                  <span className="text-dark-200 font-bold max-w-[180px] truncate" title={user.department}>{user.department || 'Not Filled'}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-dark-500 font-semibold">Semester Level</span>
+                <div className="flex justify-between items-center">
+                  <span className="text-dark-450 font-semibold uppercase tracking-wider text-[9px]">Semester Level</span>
                   <span className="text-dark-200 font-bold">{user.semester ? `Semester ${user.semester}` : 'Not Filled'}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-dark-500 font-semibold">Phone Number</span>
+                <div className="flex justify-between items-center">
+                  <span className="text-dark-450 font-semibold uppercase tracking-wider text-[9px]">Phone Number</span>
                   <span className="text-dark-200 font-bold">{user.phone || 'Not Filled'}</span>
                 </div>
               </div>
@@ -174,21 +174,21 @@ export const Dashboard: React.FC = () => {
 
             {/* Profile Verification Card - Display if student is unverified and hasn't uploaded ID */}
             {!user.isVerified && !user.studentIdImage && (
-              <div className="glass-card p-6">
-                <h3 className="text-xs font-bold text-dark-550 uppercase tracking-wider mb-2.5">Upload Student ID</h3>
-                <p className="text-[11px] text-dark-400 mb-4 leading-normal">
+              <div className="glass-card p-6 border-white/[0.05] bg-dark-900/10">
+                <h3 className="text-[10px] font-bold text-dark-350 uppercase tracking-widest mb-2.5">Upload Student ID</h3>
+                <p className="text-[11px] text-dark-400 mb-4 leading-relaxed font-medium">
                   To verify your college affiliation, drag-and-drop or select a picture of your student ID card.
                 </p>
                 {uploadError && <div className="text-[11px] text-red-400 font-bold mb-3">{uploadError}</div>}
-                <form onSubmit={handleIdUploadSubmit} className="flex flex-col gap-3">
+                <form onSubmit={handleIdUploadSubmit} className="flex flex-col gap-3.5">
                   <input
                     type="file"
                     accept="image/*"
                     onChange={(e) => e.target.files && setUploadFile(e.target.files[0])}
-                    className="glass-input py-1.5 px-3 text-xs bg-dark-950"
+                    className="glass-input py-2 px-3 text-xs bg-dark-950/40 border-white/[0.08]"
                     required
                   />
-                  <button type="submit" disabled={!uploadFile || uploadingId} className="glass-btn-primary py-2 text-xs">
+                  <button type="submit" disabled={!uploadFile || uploadingId} className="glass-btn-primary py-2.5 text-xs font-bold uppercase tracking-wider mt-1.5 shadow-glow-indigo">
                     {uploadingId ? 'Uploading ID...' : 'Submit Verification'}
                   </button>
                 </form>
@@ -197,11 +197,11 @@ export const Dashboard: React.FC = () => {
 
             {/* Profile Verification status info card */}
             {!user.isVerified && user.studentIdImage && (
-              <div className="glass-card p-6 bg-amber-500/5 border border-amber-500/10 text-xs flex items-start gap-3">
+              <div className="glass-card p-5 bg-amber-500/5 border border-amber-500/15 shadow-glow-amber text-xs flex items-start gap-3">
                 <Clock className="h-5 w-5 text-amber-400 shrink-0 mt-0.5" />
                 <div>
-                  <span className="font-bold text-amber-300">Verification Pending Approval</span>
-                  <p className="text-dark-450 mt-1 leading-normal">An administrator is reviewing your uploaded ID card. We will notify you once approved.</p>
+                  <span className="font-extrabold uppercase tracking-wider text-[10px] text-amber-300">Verification Pending</span>
+                  <p className="text-dark-300 mt-1 leading-relaxed font-medium">An administrator is reviewing your uploaded ID card. We will notify you once approved.</p>
                 </div>
               </div>
             )}
@@ -210,10 +210,10 @@ export const Dashboard: React.FC = () => {
 
         {/* RIGHT COLUMN: Dashboard Navigation tabs */}
         <main className="lg:col-span-8 flex flex-col gap-6">
-          <div className="flex gap-4 border-b border-dark-850">
+          <div className="flex gap-2.5 border-b border-white/[0.06]">
             <button
               onClick={() => setActiveTab('listings')}
-              className={`pb-3 text-sm font-bold border-b-2 transition-all ${
+              className={`pb-3 px-2 text-xs font-bold uppercase tracking-wider border-b-2 transition-all ${
                 activeTab === 'listings' ? 'border-brand-500 text-brand-400' : 'border-transparent text-dark-450 hover:text-dark-200'
               }`}
             >
@@ -221,7 +221,7 @@ export const Dashboard: React.FC = () => {
             </button>
             <button
               onClick={() => setActiveTab('requests')}
-              className={`pb-3 text-sm font-bold border-b-2 transition-all ${
+              className={`pb-3 px-2 text-xs font-bold uppercase tracking-wider border-b-2 transition-all ${
                 activeTab === 'requests' ? 'border-brand-500 text-brand-400' : 'border-transparent text-dark-450 hover:text-dark-200'
               }`}
             >
@@ -229,7 +229,7 @@ export const Dashboard: React.FC = () => {
             </button>
             <button
               onClick={() => setActiveTab('wishlist')}
-              className={`pb-3 text-sm font-bold border-b-2 transition-all ${
+              className={`pb-3 px-2 text-xs font-bold uppercase tracking-wider border-b-2 transition-all ${
                 activeTab === 'wishlist' ? 'border-brand-500 text-brand-400' : 'border-transparent text-dark-450 hover:text-dark-200'
               }`}
             >
@@ -238,41 +238,41 @@ export const Dashboard: React.FC = () => {
           </div>
 
           {/* TAB CONTENTS */}
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-6 animate-fade-in">
             {loading ? (
               <div className="flex flex-col gap-6 animate-pulse">
                 {[...Array(3)].map((_, index) => (
-                  <div key={index} className="glass-card p-5 flex flex-col sm:flex-row justify-between sm:items-center gap-4 bg-dark-950/20 border border-dark-850/80 rounded-2xl">
+                  <div key={index} className="glass-card p-5 flex flex-col sm:flex-row justify-between sm:items-center gap-4 bg-white/[0.01] border border-white/[0.05] rounded-2xl">
                     <div className="flex gap-4 items-center">
-                      <div className="h-14 w-11 bg-dark-800/40 rounded shrink-0" />
+                      <div className="h-14 w-11 bg-white/[0.02] rounded shrink-0" />
                       <div className="flex flex-col gap-2.5 text-left">
-                        <div className="h-3 bg-dark-800/40 rounded w-16" />
-                        <div className="h-4 bg-dark-800/40 rounded w-48" />
-                        <div className="h-3 bg-dark-800/40 rounded w-32" />
+                        <div className="h-3 bg-white/[0.02] rounded w-16" />
+                        <div className="h-4 bg-white/[0.02] rounded w-48" />
+                        <div className="h-3 bg-white/[0.02] rounded w-32" />
                       </div>
                     </div>
-                    <div className="h-6 bg-dark-800/40 rounded w-20 self-end sm:self-auto" />
+                    <div className="h-6 bg-white/[0.02] rounded w-20 self-end sm:self-auto" />
                   </div>
                 ))}
               </div>
             ) : activeTab === 'listings' ? (
               /* MY LISTINGS TAB */
               myResources.length === 0 ? (
-                <div className="text-center py-16 bg-dark-900/10 rounded-2xl border border-dashed border-dark-800">
-                  <FileText className="h-8 w-8 text-dark-600 mx-auto mb-3" />
-                  <h4 className="font-bold text-dark-200">No resources shared yet</h4>
-                  <p className="text-xs text-dark-500 mt-0.5">Click 'Share a Resource' to list your textbook or notes.</p>
-                  <Link to="/create-listing" className="glass-btn-primary py-2 px-5 text-xs mt-4 inline-block">Share Resource</Link>
+                <div className="text-center py-20 bg-dark-900/10 rounded-2xl border border-dashed border-white/[0.05]">
+                  <FileText className="h-8 w-8 text-dark-500 mx-auto mb-3.5" />
+                  <h4 className="font-extrabold text-xs uppercase tracking-wider text-dark-200">No resources shared yet</h4>
+                  <p className="text-xs text-dark-500 mt-1.5 max-w-sm mx-auto leading-relaxed">Click 'Share a Resource' to list your reference books or academic notes in the campus hub.</p>
+                  <Link to="/create-listing" className="glass-btn-primary py-2 px-5 text-[10px] font-bold uppercase tracking-wider mt-5 inline-block">Share Resource</Link>
                 </div>
               ) : (
-                <div className="flex flex-col gap-6">
+                <div className="flex flex-col gap-6 animate-fade-in">
                   {/* Share Resource CTA */}
-                  <div className="glass-card p-5 flex flex-col sm:flex-row justify-between sm:items-center gap-4 border border-brand-500/20 bg-brand-500/5">
-                    <div className="text-left">
-                      <h4 className="text-sm font-bold text-dark-100">Share another Academic Resource</h4>
-                      <p className="text-[11px] text-dark-400 mt-1">Have more textbooks, reference material, lab records, or exam prep guides? List them now.</p>
+                  <div className="glass-card p-5 flex flex-col sm:flex-row justify-between sm:items-center gap-4 border border-brand-500/20 bg-brand-500/5 shadow-glow-indigo">
+                    <div className="text-left max-w-lg">
+                      <h4 className="text-sm font-extrabold text-white">Share another Academic Resource</h4>
+                      <p className="text-xs text-dark-350 mt-1 leading-relaxed font-medium">Have more textbooks, reference material, lab records, or exam prep guides? List them now to help others.</p>
                     </div>
-                    <Link to="/create-listing" className="glass-btn-primary py-2 px-5 text-xs font-bold shrink-0 self-start sm:self-auto flex items-center gap-1.5">
+                    <Link to="/create-listing" className="glass-btn-primary py-2 px-5 text-[10px] font-bold uppercase tracking-wider shrink-0 self-start sm:self-auto flex items-center gap-1.5 shadow-none">
                       <Plus className="h-3.5 w-3.5" /> Share Resource
                     </Link>
                   </div>
@@ -280,24 +280,26 @@ export const Dashboard: React.FC = () => {
                   {myResources.map((res) => {
                     const matchRequests = incomingRequests.filter((req) => req.resource._id === res._id);
                     return (
-                      <div key={res._id} className="glass-card overflow-hidden">
-                        <div className="p-5 flex flex-col sm:flex-row justify-between sm:items-center gap-4 bg-dark-950/20">
+                      <div key={res._id} className="glass-card overflow-hidden border-white/[0.05] bg-dark-900/10 rounded-2xl">
+                        <div className="p-5 flex flex-col sm:flex-row justify-between sm:items-center gap-4 bg-white/[0.01]">
                           <div className="flex gap-4">
-                            <img src={getImageUrl(res.images[0])} alt="" className="h-14 w-11 object-cover bg-dark-950 rounded border border-dark-850" />
-                            <div className="text-left">
-                              <span className="badge-sky text-[9px] font-semibold px-2 py-0.5 rounded-full border">{res.resourceType}</span>
-                              <h4 className="text-sm font-bold text-dark-100 mt-1 line-clamp-1">{res.title}</h4>
-                              <p className="text-[10px] text-dark-450 mt-0.5">Course Code: {res.courseCode} | Sem {res.semester}</p>
+                            <img src={getImageUrl(res.images[0])} alt="" className="h-14 w-11 object-cover bg-dark-950 rounded border border-white/[0.06]" />
+                            <div className="text-left flex flex-col justify-between">
+                              <div>
+                                <span className="badge-sky text-[8px] px-2 py-0.5 rounded-full border border-sky-500/25">{res.resourceType}</span>
+                                <h4 className="text-sm font-extrabold text-white mt-1.5 line-clamp-1">{res.title}</h4>
+                              </div>
+                              <p className="text-[10px] text-dark-450 font-bold uppercase tracking-wider mt-1">Course Code: {res.courseCode} | Sem {res.semester}</p>
                             </div>
                           </div>
 
-                          <div className="flex items-center gap-3.5 self-end sm:self-auto">
-                            <span className={`text-xs px-2.5 py-1 rounded font-bold uppercase ${
-                              res.status === 'Available' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-brand-500/10 text-brand-300'
+                          <div className="flex items-center gap-4 self-end sm:self-auto">
+                            <span className={`text-[10px] px-3 py-1 rounded-xl font-extrabold uppercase tracking-wider ${
+                              res.status === 'Available' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-brand-500/10 text-brand-350 border border-brand-500/20'
                             }`}>
                               {res.status}
                             </span>
-                            <button onClick={() => deleteListing(res._id)} className="text-xs text-red-400 hover:text-red-300 font-bold">
+                            <button onClick={() => deleteListing(res._id)} className="text-[10px] text-red-400 hover:text-red-300 font-extrabold uppercase tracking-wider">
                               Delete
                             </button>
                           </div>
@@ -305,32 +307,32 @@ export const Dashboard: React.FC = () => {
 
                         {/* Nest Requests for this book listing */}
                         {matchRequests.length > 0 && (
-                          <div className="border-t border-dark-850 p-4 flex flex-col gap-3.5 bg-dark-950/40">
-                            <span className="text-[10px] text-dark-500 font-bold uppercase tracking-wider block">Incoming Exchange Requests ({matchRequests.length})</span>
+                          <div className="border-t border-white/[0.04] p-5 flex flex-col gap-4 bg-dark-950/20">
+                            <span className="text-[9px] text-dark-500 font-bold uppercase tracking-widest block">Incoming Exchange Requests ({matchRequests.length})</span>
                             <div className="flex flex-col gap-3">
                               {matchRequests.map((req) => (
-                                <div key={req._id} className="p-3 bg-dark-900 rounded-xl border border-dark-850 flex flex-col sm:flex-row justify-between sm:items-center gap-3">
-                                  <div className="flex items-center gap-2.5 text-left">
-                                    <img src={req.requester.avatar} className="h-7 w-7 rounded bg-dark-950" alt="" />
+                                <div key={req._id} className="p-4 bg-dark-900/60 rounded-2xl border border-white/[0.05] flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+                                  <div className="flex items-center gap-3 text-left">
+                                    <img src={req.requester.avatar} className="h-8 w-8 rounded-lg bg-dark-950 border border-white/[0.06] object-cover" alt="" />
                                     <div>
-                                      <span className="text-xs font-bold text-dark-100">{req.requester.name}</span>
-                                      <span className="text-[10px] text-dark-450 block">Dept: {req.requester.department} | Sem {req.requester.semester}</span>
+                                      <span className="text-xs font-extrabold text-dark-100 block">{req.requester.name}</span>
+                                      <span className="text-[9px] text-dark-450 font-bold uppercase tracking-wider mt-0.5 block">Dept: {req.requester.department} | Sem {req.requester.semester}</span>
                                     </div>
                                   </div>
 
                                   {/* Approve / Reject Controls */}
-                                  <div className="flex items-center gap-2 self-end sm:self-auto">
+                                  <div className="flex items-center gap-2.5 self-end sm:self-auto">
                                     {req.status === 'Pending' ? (
                                       <>
                                         <button 
                                           onClick={() => handleUpdateStatus(req._id, 'Approved')}
-                                          className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1 px-3.5 rounded text-[10px] uppercase shadow"
+                                          className="bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold py-1.5 px-4 rounded-xl text-[10px] uppercase shadow-md shadow-emerald-600/10 transition-all duration-200"
                                         >
                                           Approve
                                         </button>
                                         <button 
                                           onClick={() => handleUpdateStatus(req._id, 'Rejected')}
-                                          className="bg-dark-950 border border-dark-800 text-dark-400 hover:text-dark-100 font-bold py-1 px-3.5 rounded text-[10px] uppercase"
+                                          className="bg-white/[0.02] border border-white/[0.08] text-dark-350 hover:text-white font-bold py-1.5 px-4 rounded-xl text-[10px] uppercase transition-all duration-200"
                                         >
                                           Decline
                                         </button>
@@ -352,22 +354,24 @@ export const Dashboard: React.FC = () => {
             ) : activeTab === 'requests' ? (
               /* MY REQUESTS TAB (OUTGOING) */
               outgoingRequests.length === 0 ? (
-                <div className="text-center py-16 bg-dark-900/10 rounded-2xl border border-dashed border-dark-800">
-                  <Clock className="h-8 w-8 text-dark-600 mx-auto mb-3" />
-                  <h4 className="font-bold text-dark-200">No outgoing requests</h4>
-                  <p className="text-xs text-dark-500 mt-0.5">When you request to borrow/rent/buy resources, they will appear here.</p>
-                  <Link to="/" className="glass-btn-primary py-2 px-5 text-xs mt-4 inline-block">Browse Catalog</Link>
+                <div className="text-center py-20 bg-dark-900/10 rounded-2xl border border-dashed border-white/[0.05]">
+                  <Clock className="h-8 w-8 text-dark-500 mx-auto mb-3.5" />
+                  <h4 className="font-extrabold text-xs uppercase tracking-wider text-dark-200">No outgoing requests</h4>
+                  <p className="text-xs text-dark-500 mt-1.5 max-w-sm mx-auto leading-relaxed">When you request to borrow/rent/buy resources, they will appear here to coordinate trade details.</p>
+                  <Link to="/" className="glass-btn-primary py-2 px-5 text-[10px] font-bold uppercase tracking-wider mt-5 inline-block">Browse Catalog</Link>
                 </div>
               ) : (
-                <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-4 animate-fade-in">
                   {outgoingRequests.map((req) => (
-                    <div key={req._id} className="glass-card p-5 flex flex-col md:flex-row justify-between md:items-center gap-4 text-left">
+                    <div key={req._id} className="glass-card p-5 flex flex-col md:flex-row justify-between md:items-center gap-4 border border-white/[0.05] bg-dark-900/10 rounded-2xl text-left">
                       <div className="flex gap-4">
-                        <img src={getImageUrl(req.resource.images[0])} alt="" className="h-14 w-11 object-cover bg-dark-950 rounded border border-dark-850" />
-                        <div>
-                          <span className="badge-sky text-[9px] font-semibold px-2 py-0.5 rounded-full border">{req.resource.resourceType}</span>
-                          <h4 className="text-sm font-bold text-dark-100 mt-1 line-clamp-1">{req.resource.title}</h4>
-                          <p className="text-[10px] text-dark-450 mt-0.5">Owner: {req.owner.name} | Mode: {req.exchangeType}</p>
+                        <img src={getImageUrl(req.resource.images[0])} alt="" className="h-14 w-11 object-cover bg-dark-950 rounded border border-white/[0.06]" />
+                        <div className="flex flex-col justify-between py-0.5">
+                          <div>
+                            <span className="badge-sky text-[8px] px-2 py-0.5 rounded-full border border-sky-500/25">{req.resource.resourceType}</span>
+                            <h4 className="text-sm font-extrabold text-white mt-1.5 line-clamp-1">{req.resource.title}</h4>
+                          </div>
+                          <p className="text-[10px] text-dark-450 font-bold uppercase tracking-wider mt-1">Owner: {req.owner.name} | Mode: {req.exchangeType}</p>
                         </div>
                       </div>
 
@@ -375,16 +379,16 @@ export const Dashboard: React.FC = () => {
                         <span className={getStatusBadge(req.status)}>{req.status}</span>
                         {/* Display unlocked details if request is approved */}
                         {req.status === 'Approved' && (
-                          <div className="flex flex-col gap-1.5 p-2.5 rounded-xl border border-emerald-500/20 bg-emerald-500/5 text-[11px] text-emerald-400 mt-1">
-                            <div className="flex items-center gap-1.5"><Mail className="h-3.5 w-3.5" /> {req.owner.email}</div>
+                          <div className="flex flex-col gap-2 p-3 rounded-2xl border border-emerald-500/25 bg-emerald-500/5 text-xs text-emerald-400 mt-2 shadow-glow-emerald">
+                            <div className="flex items-center gap-1.5"><Mail className="h-3.5 w-3.5 text-emerald-500" /> <span className="font-semibold">{req.owner.email}</span></div>
                             {req.owner.phone && (
-                              <div className="flex items-center gap-1.5"><Phone className="h-3.5 w-3.5" /> {req.owner.phone}</div>
+                              <div className="flex items-center gap-1.5 mt-0.5"><Phone className="h-3.5 w-3.5 text-emerald-500" /> <span className="font-semibold">{req.owner.phone}</span></div>
                             )}
                             <button
                               onClick={() => navigate(`/chat?partnerId=${req.owner._id}&resourceId=${req.resource._id}`)}
-                              className="text-[10px] uppercase font-bold text-center bg-emerald-600 text-white rounded py-1 mt-1 hover:bg-emerald-700 transition-colors flex items-center justify-center gap-1"
+                              className="text-[9px] uppercase font-bold text-center bg-emerald-600 text-white rounded-xl py-1.5 mt-2 hover:bg-emerald-700 transition-colors flex items-center justify-center gap-1.5 shadow-md shadow-emerald-600/15"
                             >
-                              <MessageSquare className="h-3 w-3" /> Initiate Chat
+                              <MessageSquare className="h-3.5 w-3.5" /> Initiate Chat
                             </button>
                           </div>
                         )}
@@ -396,22 +400,22 @@ export const Dashboard: React.FC = () => {
             ) : (
               /* WISHLIST TAB */
               wishlist.length === 0 ? (
-                <div className="text-center py-16 bg-dark-900/10 rounded-2xl border border-dashed border-dark-800">
-                  <Heart className="h-8 w-8 text-dark-600 mx-auto mb-3" />
-                  <h4 className="font-bold text-dark-200">Wishlist is empty</h4>
-                  <p className="text-xs text-dark-500 mt-0.5">Bookmark resource cards to keep track of books you need.</p>
+                <div className="text-center py-20 bg-dark-900/10 rounded-2xl border border-dashed border-white/[0.05]">
+                  <Heart className="h-8 w-8 text-dark-500 mx-auto mb-3.5 animate-pulse" />
+                  <h4 className="font-extrabold text-xs uppercase tracking-wider text-dark-200">Wishlist is empty</h4>
+                  <p className="text-xs text-dark-500 mt-1.5 max-w-sm mx-auto leading-relaxed">Bookmark resource cards in the main catalog to keep track of academic books or documents you need.</p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 animate-fade-in">
                   {wishlist.map((item) => (
                     <div key={item._id} className="relative group">
                       {/* Trash/delete wishlist icon */}
                       <button
                         onClick={() => removeFromWishlist(item._id)}
-                        className="absolute top-2 right-2 bg-dark-900/90 hover:bg-red-500 text-dark-400 hover:text-white p-2 rounded-xl border border-dark-800 z-10 hover:scale-105 transition-all"
+                        className="absolute top-3 right-3 bg-dark-900/90 hover:bg-red-650 hover:border-red-500 text-dark-400 hover:text-white p-2 rounded-xl border border-white/[0.08] z-10 hover:scale-105 transition-all shadow-lg"
                         title="Remove from Wishlist"
                       >
-                        <XCircleIcon className="h-4 w-4" />
+                        <XCircleIcon className="h-4.5 w-4.5" />
                       </button>
                       <BookCard resource={item} />
                     </div>

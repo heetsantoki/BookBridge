@@ -72,25 +72,28 @@ export const BookCard: React.FC<BookCardProps> = ({ resource }) => {
   };
 
   return (
-    <div className="glass-card glass-card-hover group flex flex-col h-full overflow-hidden">
+    <div className="glass-card glass-card-hover group flex flex-col h-full overflow-hidden border border-white/[0.05] hover:border-brand-500/25 shadow-lg hover:shadow-glass-primary transition-all duration-300">
       {/* Cover Image Container */}
-      <div className="relative aspect-[4/3] w-full overflow-hidden bg-dark-950">
+      <div className="relative aspect-[4/3] w-full overflow-hidden bg-dark-950/60 border-b border-white/[0.04]">
         <img
           src={getImageUrl(resource.images[0])}
           alt={resource.title}
-          className="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
+          className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-110"
         />
         
+        {/* Soft shadow overlay to make text pop */}
+        <div className="absolute inset-0 bg-gradient-to-t from-dark-950/70 via-transparent to-black/30 pointer-events-none" />
+
         {/* Floating Badges */}
-        <div className="absolute top-3 left-3 flex flex-wrap gap-1.5 z-10">
-          <span className={`inline-flex items-center gap-1 ${getResourceTypeBadge(resource.resourceType)}`}>
+        <div className="absolute top-3.5 left-3.5 flex flex-wrap gap-1.5 z-10">
+          <span className={`inline-flex items-center gap-1 shadow-md ${getResourceTypeBadge(resource.resourceType)}`}>
             {getResourceTypeIcon(resource.resourceType)}
             {resource.resourceType}
           </span>
         </div>
 
-        <div className="absolute bottom-3 right-3 z-10">
-          <span className={`px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider ${getExchangeBadge(resource.exchangeType)}`}>
+        <div className="absolute bottom-3.5 right-3.5 z-10">
+          <span className={`px-3 py-1 rounded-xl text-[10px] font-extrabold uppercase tracking-wider shadow-lg backdrop-blur-md ${getExchangeBadge(resource.exchangeType)}`}>
             {resource.exchangeType}
             {resource.exchangeType !== 'Free' && resource.exchangeType !== 'Borrow' && ` : ₹${resource.price}`}
             {resource.exchangeType === 'Rent' && '/mo'}
@@ -100,33 +103,33 @@ export const BookCard: React.FC<BookCardProps> = ({ resource }) => {
 
       {/* Info Content */}
       <div className="p-5 flex flex-col flex-grow text-left">
-        <div className="flex items-center gap-2 text-dark-400 text-xs font-semibold mb-1">
-          <span>{resource.department}</span>
+        <div className="flex items-center gap-2 text-dark-450 text-[10px] font-bold uppercase tracking-wider mb-2">
+          <span className="truncate max-w-[150px]" title={resource.department}>{resource.department}</span>
           <span>•</span>
-          <span className="flex items-center gap-0.5"><Calendar className="h-3 w-3" /> Sem {resource.semester}</span>
+          <span className="flex items-center gap-0.5 whitespace-nowrap"><Calendar className="h-3 w-3" /> Sem {resource.semester}</span>
         </div>
 
-        <h3 className="text-base font-bold text-dark-100 line-clamp-1 group-hover:text-brand-400 transition-colors duration-200">
+        <h3 className="text-base font-extrabold text-dark-100 line-clamp-1 group-hover:text-brand-400 transition-colors duration-300">
           {resource.title}
         </h3>
         
-        <p className="text-xs text-dark-400 mb-4 line-clamp-1">
+        <p className="text-xs text-dark-400 mt-1 mb-4 line-clamp-1 font-medium italic">
           by {resource.author}
         </p>
 
         {/* Separator */}
-        <div className="h-[1px] bg-dark-800/60 my-2" />
+        <div className="h-[1px] bg-white/[0.05] my-2" />
 
         <div className="mt-auto flex items-center justify-between pt-2">
           {/* Condition and Course Code */}
           <div className="flex flex-col">
-            <span className="text-[10px] text-dark-500 font-bold uppercase tracking-wider">Course Code</span>
-            <span className="text-xs font-semibold text-dark-300">{resource.courseCode}</span>
+            <span className="text-[9px] text-dark-500 font-bold uppercase tracking-wider">Course Code</span>
+            <span className="text-xs font-bold text-dark-200 mt-0.5">{resource.courseCode}</span>
           </div>
 
           <div className="flex flex-col text-right">
-            <span className="text-[10px] text-dark-500 font-bold uppercase tracking-wider">Condition</span>
-            <span className="text-xs font-semibold text-accent-400">{resource.condition}</span>
+            <span className="text-[9px] text-dark-500 font-bold uppercase tracking-wider">Condition</span>
+            <span className="text-xs font-bold text-accent-400 mt-0.5">{resource.condition}</span>
           </div>
         </div>
       </div>
@@ -134,7 +137,7 @@ export const BookCard: React.FC<BookCardProps> = ({ resource }) => {
       {/* Action Footer */}
       <Link 
         to={`/resources/${resource._id}`}
-        className="block text-center py-3 bg-dark-950/40 hover:bg-brand-500 text-xs font-bold text-dark-350 hover:text-white border-t border-dark-800/50 hover:border-transparent transition-all duration-200"
+        className="block text-center py-3.5 bg-white/[0.02] hover:bg-brand-500 text-[11px] font-bold uppercase tracking-wider text-dark-300 hover:text-white border-t border-white/[0.04] hover:border-transparent transition-all duration-300"
       >
         View Details & Request
       </Link>
