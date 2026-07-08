@@ -13,10 +13,10 @@ interface BookCardProps {
     semester: number;
     courseCode: string;
     condition: 'New' | 'Like New' | 'Good' | 'Fair' | 'Poor';
-    exchangeType: 'Borrow' | 'Rent' | 'Buy' | 'Free';
+    exchangeType: 'Borrow' | 'Rent' | 'Buy' | 'Free' | 'Exchange' | 'Both';
     price: number;
     images: string[];
-    status: 'Available' | 'Pending' | 'Exchanged';
+    status: 'Available' | 'Pending' | 'Reserved' | 'Exchanged' | 'Sold';
     owner: {
       name: string;
       avatar: string;
@@ -66,6 +66,10 @@ export const BookCard: React.FC<BookCardProps> = ({ resource }) => {
         return 'bg-amber-500/20 text-amber-300';
       case 'Buy':
         return 'bg-purple-500/20 text-purple-300';
+      case 'Exchange':
+        return 'bg-pink-500/20 text-pink-300';
+      case 'Both':
+        return 'bg-cyan-500/20 text-cyan-300';
       default:
         return 'bg-dark-800 text-dark-300';
     }
@@ -92,7 +96,7 @@ export const BookCard: React.FC<BookCardProps> = ({ resource }) => {
         <div className="absolute bottom-3 right-3 z-10">
           <span className={`px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider ${getExchangeBadge(resource.exchangeType)}`}>
             {resource.exchangeType}
-            {resource.exchangeType !== 'Free' && resource.exchangeType !== 'Borrow' && ` : ₹${resource.price}`}
+            {resource.exchangeType !== 'Free' && resource.exchangeType !== 'Borrow' && resource.exchangeType !== 'Exchange' && ` : ₹${resource.price}`}
             {resource.exchangeType === 'Rent' && '/mo'}
           </span>
         </div>

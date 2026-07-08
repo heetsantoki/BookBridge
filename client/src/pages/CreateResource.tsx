@@ -15,7 +15,7 @@ const formSchema = z.object({
   semester: z.coerce.number().min(1).max(8, { message: 'Semester must be between 1 and 8' }),
   courseCode: z.string().min(2, { message: 'Course Code is required' }),
   condition: z.enum(['New', 'Like New', 'Good', 'Fair', 'Poor']),
-  exchangeType: z.enum(['Borrow', 'Rent', 'Buy', 'Free']),
+  exchangeType: z.enum(['Borrow', 'Rent', 'Buy', 'Free', 'Exchange', 'Both']),
   price: z.coerce.number().min(0, { message: 'Price cannot be negative' }).optional()
 });
 
@@ -276,6 +276,8 @@ export const CreateResource: React.FC = () => {
                 <option value="Rent">Rent out</option>
                 <option value="Buy">Sell (Purchase)</option>
                 <option value="Free">Giveaway (Free)</option>
+                <option value="Exchange">Exchange (Book-for-Book)</option>
+                <option value="Both">Both (Exchange or Sell/Rent/Borrow)</option>
               </select>
             </div>
 
@@ -284,7 +286,7 @@ export const CreateResource: React.FC = () => {
               <input
                 type="number"
                 placeholder="₹0"
-                disabled={selectedExchangeType === 'Free' || selectedExchangeType === 'Borrow'}
+                disabled={selectedExchangeType === 'Free' || selectedExchangeType === 'Borrow' || selectedExchangeType === 'Exchange'}
                 className="glass-input disabled:opacity-40 disabled:cursor-not-allowed"
                 {...register('price')}
               />

@@ -14,7 +14,7 @@ export const Dashboard: React.FC = () => {
   const { socket } = useSocket();
   const navigate = useNavigate();
 
-  const [activeTab, setActiveTab] = useState<'listings' | 'requests' | 'wishlist'>('listings');
+  const [activeTab, setActiveTab] = useState<'listings' | 'requests' | 'wishlist' | 'receivedExchanges' | 'sentExchanges'>('listings');
   const [loading, setLoading] = useState(true);
 
   // Data states
@@ -22,6 +22,8 @@ export const Dashboard: React.FC = () => {
   const [incomingRequests, setIncomingRequests] = useState<any[]>([]);
   const [outgoingRequests, setOutgoingRequests] = useState<any[]>([]);
   const [wishlist, setWishlist] = useState<any[]>([]);
+  const [incomingExchanges, setIncomingExchanges] = useState<any[]>([]);
+  const [outgoingExchanges, setOutgoingExchanges] = useState<any[]>([]);
 
   // Local ID upload states
   const [uploadFile, setUploadFile] = useState<File | null>(null);
@@ -32,10 +34,11 @@ export const Dashboard: React.FC = () => {
     if (!user) return;
     setLoading(true);
     try {
-      const [resRes, exchangesRes, wishRes] = await Promise.all([
+      const [resRes, exchangesRes, wishRes, exchangeReqsRes] = await Promise.all([
         axios.get(`http://localhost:5000/api/resources?ownerId=${user.id}`),
         axios.get('http://localhost:5000/api/transactions/my-exchanges'),
-        axios.get('http://localhost:5000/api/resources/wishlist')
+        axios.get('http://localhost:5000/api/resources/wishlist'),
+        axios.get('http://localhost:5000/api/exchange-requests/my-requests')
       ]);
 
       if (resRes.data.success) setMyResources(resRes.data.resources);
@@ -44,10 +47,64 @@ export const Dashboard: React.FC = () => {
         setOutgoingRequests(exchangesRes.data.outgoing);
       }
       if (wishRes.data.success) setWishlist(wishRes.data.wishlist);
+      if (exchangeReqsRes.data.success) {
+        setIncomingExchanges(exchangeReqsRes.data.incoming);
+        setOutgoingExchanges(exchangeReqsRes.data.outgoing);
+      }
     } catch (err) {
       console.error(err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleAcceptExchange = async (req: any) => {
+    try {
+      const res = await axios.put(`http://localhost:5000/api/exchange-requests/${req._id}/accept`);
+      if (res.data.success) {
+        alert('Exchange request accepted successfully!');
+        navigate(`/chat?partnerId=${req.requester._id}&resourceId=${req.requestedBook._id}`);
+      }
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'Failed to accept exchange request.');
+    }
+  };
+
+  const handleRejectExchange = async (id: string) => {
+    try {
+      const res = await axios.put(`http://localhost:5000/api/exchange-requests/${id}/reject`);
+      if (res.data.success) {
+        alert('Exchange request rejected.');
+        fetchDashboardData();
+      }
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'Failed to reject exchange request.');
+    }
+  };
+
+  const handleCancelExchange = async (id: string) => {
+    if (!window.confirm('Are you sure you want to cancel this exchange request?')) return;
+    try {
+      const res = await axios.put(`http://localhost:5000/api/exchange-requests/${id}/cancel`);
+      if (res.data.success) {
+        alert('Exchange request cancelled.');
+        fetchDashboardData();
+      }
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'Failed to cancel exchange request.');
+    }
+  };
+
+  const handleCompleteExchange = async (id: string) => {
+    if (!window.confirm('Are you sure the books have been physically exchanged and you want to complete the transaction? This will remove both books from the marketplace.')) return;
+    try {
+      const res = await axios.put(`http://localhost:5000/api/exchange-requests/${id}/complete`);
+      if (res.data.success) {
+        alert('Exchange completed successfully!');
+        fetchDashboardData();
+      }
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'Failed to complete exchange.');
     }
   };
 
@@ -119,8 +176,10 @@ export const Dashboard: React.FC = () => {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'Approved':
+      case 'Accepted':
         return 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-0.5 rounded-full text-xs font-bold';
       case 'Rejected':
+      case 'Cancelled':
         return 'bg-red-500/10 text-red-400 border border-red-500/20 px-2.5 py-0.5 rounded-full text-xs font-bold';
       case 'Completed':
         return 'bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2.5 py-0.5 rounded-full text-xs font-bold';
@@ -210,10 +269,10 @@ export const Dashboard: React.FC = () => {
 
         {/* RIGHT COLUMN: Dashboard Navigation tabs */}
         <main className="lg:col-span-8 flex flex-col gap-6">
-          <div className="flex gap-4 border-b border-dark-850">
+          <div className="flex gap-4 border-b border-dark-850 overflow-x-auto scrollbar-none">
             <button
               onClick={() => setActiveTab('listings')}
-              className={`pb-3 text-sm font-bold border-b-2 transition-all ${
+              className={`pb-3 text-sm font-bold border-b-2 transition-all whitespace-nowrap ${
                 activeTab === 'listings' ? 'border-brand-500 text-brand-400' : 'border-transparent text-dark-450 hover:text-dark-200'
               }`}
             >
@@ -221,15 +280,31 @@ export const Dashboard: React.FC = () => {
             </button>
             <button
               onClick={() => setActiveTab('requests')}
-              className={`pb-3 text-sm font-bold border-b-2 transition-all ${
+              className={`pb-3 text-sm font-bold border-b-2 transition-all whitespace-nowrap ${
                 activeTab === 'requests' ? 'border-brand-500 text-brand-400' : 'border-transparent text-dark-450 hover:text-dark-200'
               }`}
             >
               My Trade Requests ({outgoingRequests.length})
             </button>
             <button
+              onClick={() => setActiveTab('receivedExchanges')}
+              className={`pb-3 text-sm font-bold border-b-2 transition-all whitespace-nowrap ${
+                activeTab === 'receivedExchanges' ? 'border-brand-500 text-brand-400' : 'border-transparent text-dark-450 hover:text-dark-200'
+              }`}
+            >
+              Received Exchanges ({incomingExchanges.length})
+            </button>
+            <button
+              onClick={() => setActiveTab('sentExchanges')}
+              className={`pb-3 text-sm font-bold border-b-2 transition-all whitespace-nowrap ${
+                activeTab === 'sentExchanges' ? 'border-brand-500 text-brand-400' : 'border-transparent text-dark-450 hover:text-dark-200'
+              }`}
+            >
+              My Exchanges ({outgoingExchanges.length})
+            </button>
+            <button
               onClick={() => setActiveTab('wishlist')}
-              className={`pb-3 text-sm font-bold border-b-2 transition-all ${
+              className={`pb-3 text-sm font-bold border-b-2 transition-all whitespace-nowrap ${
                 activeTab === 'wishlist' ? 'border-brand-500 text-brand-400' : 'border-transparent text-dark-450 hover:text-dark-200'
               }`}
             >
@@ -388,6 +463,213 @@ export const Dashboard: React.FC = () => {
                             </button>
                           </div>
                         )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )
+            ) : activeTab === 'receivedExchanges' ? (
+              /* RECEIVED EXCHANGE REQUESTS TAB */
+              incomingExchanges.length === 0 ? (
+                <div className="text-center py-16 bg-dark-900/10 rounded-2xl border border-dashed border-dark-800">
+                  <Clock className="h-8 w-8 text-dark-600 mx-auto mb-3" />
+                  <h4 className="font-bold text-dark-200">No received exchange requests</h4>
+                  <p className="text-xs text-dark-500 mt-0.5">When other users offer to exchange books with your listings, they will appear here.</p>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-4">
+                  {incomingExchanges.map((req) => (
+                    <div key={req._id} className="glass-card p-5 flex flex-col gap-4 text-left">
+                      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-dark-850 pb-3">
+                        <div className="flex items-center gap-3">
+                          <img src={req.requester.avatar} className="h-9 w-9 rounded-full bg-dark-900" alt="" />
+                          <div>
+                            <span className="text-sm font-bold text-dark-100">{req.requester.name}</span>
+                            <span className="text-[10px] text-dark-450 block">Dept: {req.requester.department} | Sem {req.requester.semester}</span>
+                          </div>
+                        </div>
+                        <span className="text-[10px] text-dark-500 font-semibold">{new Date(req.createdAt).toLocaleDateString()}</span>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+                        <div className="flex flex-col gap-1.5 p-3 rounded-xl bg-dark-950/20 border border-dark-900">
+                          <span className="text-[10px] text-brand-400 font-bold uppercase tracking-wider">Your Book (Requested)</span>
+                          <div className="flex gap-3">
+                            <img src={getImageUrl(req.requestedBook.images[0])} alt="" className="h-12 w-9 object-cover rounded bg-dark-950 border border-dark-850" />
+                            <div>
+                              <h5 className="text-xs font-bold text-white line-clamp-1">{req.requestedBook.title}</h5>
+                              <p className="text-[10px] text-dark-450 mt-0.5">Course: {req.requestedBook.courseCode}</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-col gap-1.5 p-3 rounded-xl bg-dark-950/20 border border-dark-900">
+                          <span className="text-[10px] text-pink-400 font-bold uppercase tracking-wider">Their Offered Book</span>
+                          <div className="flex gap-3 justify-between items-center">
+                            <div className="flex gap-3">
+                              <img src={getImageUrl(req.offeredBook.images[0])} alt="" className="h-12 w-9 object-cover rounded bg-dark-950 border border-dark-850" />
+                              <div>
+                                <h5 className="text-xs font-bold text-white line-clamp-1">{req.offeredBook.title}</h5>
+                                <p className="text-[10px] text-dark-450 mt-0.5">Course: {req.offeredBook.courseCode}</p>
+                              </div>
+                            </div>
+                            <a 
+                              href={`/resources/${req.offeredBook._id}`} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="text-[10px] uppercase font-bold bg-dark-950 border border-dark-800 text-dark-300 hover:text-white px-2 py-1 rounded transition-colors"
+                            >
+                              View Offered Book
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+
+                      {req.message && (
+                        <div className="p-3 bg-dark-950/40 rounded-xl border border-dark-900 text-xs italic text-dark-400">
+                          "{req.message}"
+                        </div>
+                      )}
+
+                      <div className="flex justify-between items-center pt-2">
+                        <span className={getStatusBadge(req.status)}>{req.status}</span>
+                        <div className="flex gap-2">
+                          {req.status === 'Pending' && (
+                            <>
+                              <button 
+                                onClick={() => handleAcceptExchange(req)}
+                                className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1.5 px-4 rounded text-xs uppercase shadow transition-colors"
+                              >
+                                Accept
+                              </button>
+                              <button 
+                                onClick={() => handleRejectExchange(req._id)}
+                                className="bg-dark-950 border border-dark-800 text-dark-400 hover:text-dark-100 font-bold py-1.5 px-4 rounded text-xs uppercase transition-colors"
+                              >
+                                Reject
+                              </button>
+                            </>
+                          )}
+                          {req.status === 'Accepted' && (
+                            <>
+                              <div className="flex flex-col gap-1 text-[11px] text-emerald-400 border border-emerald-500/20 bg-emerald-500/5 p-2 rounded-xl">
+                                <div>Email: {req.requester.email}</div>
+                                {req.requester.phone && <div>Phone: {req.requester.phone}</div>}
+                                <button
+                                  onClick={() => navigate(`/chat?partnerId=${req.requester._id}&resourceId=${req.requestedBook._id}`)}
+                                  className="text-[10px] uppercase font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded py-1 px-2 mt-1 transition-colors flex items-center justify-center gap-1"
+                                >
+                                  Chat with Buyer
+                                </button>
+                              </div>
+                              <button
+                                onClick={() => handleCompleteExchange(req._id)}
+                                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-1.5 px-4 rounded text-xs uppercase shadow transition-colors ml-2"
+                              >
+                                Complete Exchange
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )
+            ) : activeTab === 'sentExchanges' ? (
+              /* SENT EXCHANGE REQUESTS TAB */
+              outgoingExchanges.length === 0 ? (
+                <div className="text-center py-16 bg-dark-900/10 rounded-2xl border border-dashed border-dark-800">
+                  <Clock className="h-8 w-8 text-dark-600 mx-auto mb-3" />
+                  <h4 className="font-bold text-dark-200">No sent exchange requests</h4>
+                  <p className="text-xs text-dark-500 mt-0.5">When you request to trade books with other users, they will appear here.</p>
+                  <Link to="/" className="glass-btn-primary py-2 px-5 text-xs mt-4 inline-block">Browse Catalog</Link>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-4">
+                  {outgoingExchanges.map((req) => (
+                    <div key={req._id} className="glass-card p-5 flex flex-col gap-4 text-left">
+                      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-dark-850 pb-3">
+                        <div className="flex items-center gap-3">
+                          <span className="text-xs font-bold text-dark-450">Seller Name:</span>
+                          <span className="text-xs font-bold text-white">{req.receiver.name}</span>
+                          <span className="text-[10px] text-dark-450">({req.receiver.department})</span>
+                        </div>
+                        <span className="text-[10px] text-dark-500 font-semibold">{new Date(req.createdAt).toLocaleDateString()}</span>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+                        <div className="flex flex-col gap-1.5 p-3 rounded-xl bg-dark-950/20 border border-dark-900">
+                          <span className="text-[10px] text-brand-400 font-bold uppercase tracking-wider">Requested Book</span>
+                          <div className="flex gap-3 justify-between items-center">
+                            <div className="flex gap-3">
+                              <img src={getImageUrl(req.requestedBook.images[0])} alt="" className="h-12 w-9 object-cover rounded bg-dark-950 border border-dark-850" />
+                              <div>
+                                <h5 className="text-xs font-bold text-white line-clamp-1">{req.requestedBook.title}</h5>
+                                <p className="text-[10px] text-dark-450 mt-0.5">Course: {req.requestedBook.courseCode}</p>
+                              </div>
+                            </div>
+                            <a 
+                              href={`/resources/${req.requestedBook._id}`} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="text-[10px] uppercase font-bold bg-dark-950 border border-dark-800 text-dark-300 hover:text-white px-2 py-1 rounded transition-colors"
+                            >
+                              View Requested Book
+                            </a>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-col gap-1.5 p-3 rounded-xl bg-dark-950/20 border border-dark-900">
+                          <span className="text-[10px] text-pink-400 font-bold uppercase tracking-wider">Your Offered Book</span>
+                          <div className="flex gap-3">
+                            <img src={getImageUrl(req.offeredBook.images[0])} alt="" className="h-12 w-9 object-cover rounded bg-dark-950 border border-dark-850" />
+                            <div>
+                              <h5 className="text-xs font-bold text-white line-clamp-1">{req.offeredBook.title}</h5>
+                              <p className="text-[10px] text-dark-450 mt-0.5">Course: {req.offeredBook.courseCode}</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {req.message && (
+                        <div className="p-3 bg-dark-950/40 rounded-xl border border-dark-900 text-xs italic text-dark-400">
+                          "{req.message}"
+                        </div>
+                      )}
+
+                      <div className="flex justify-between items-center pt-2">
+                        <span className={getStatusBadge(req.status)}>{req.status}</span>
+                        <div className="flex gap-2 items-center">
+                          {req.status === 'Pending' && (
+                            <button 
+                              onClick={() => handleCancelExchange(req._id)}
+                              className="bg-red-950 border border-red-800 hover:bg-red-700 hover:text-white text-red-400 font-bold py-1.5 px-4 rounded text-xs uppercase transition-all"
+                            >
+                              Cancel Request
+                            </button>
+                          )}
+                          {req.status === 'Accepted' && (
+                            <>
+                              <div className="flex flex-col gap-1 text-[11px] text-emerald-400 border border-emerald-500/20 bg-emerald-500/5 p-2 rounded-xl">
+                                <div>Email: {req.receiver.email}</div>
+                                {req.receiver.phone && <div>Phone: {req.receiver.phone}</div>}
+                                <button
+                                  onClick={() => navigate(`/chat?partnerId=${req.receiver._id}&resourceId=${req.requestedBook._id}`)}
+                                  className="text-[10px] uppercase font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded py-1 px-2 mt-1 transition-colors flex items-center justify-center gap-1"
+                                >
+                                  Chat with Seller
+                                </button>
+                              </div>
+                              <button
+                                onClick={() => handleCompleteExchange(req._id)}
+                                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-1.5 px-4 rounded text-xs uppercase shadow transition-colors ml-2"
+                              >
+                                Complete Exchange
+                              </button>
+                            </>
+                          )}
+                        </div>
                       </div>
                     </div>
                   ))}

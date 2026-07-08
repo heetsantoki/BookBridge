@@ -17,7 +17,7 @@ const departments = [
 ];
 
 const resourceTypes = ['Textbook', 'Notes', 'Previous Year Paper', 'Lab Manual', 'Project Report', 'E-book/PDF'];
-const exchangeTypes = ['Borrow', 'Rent', 'Buy', 'Free'];
+const exchangeTypes = ['Borrow', 'Rent', 'Buy', 'Free', 'Exchange', 'Both'];
 const conditions = ['New', 'Like New', 'Good', 'Fair', 'Poor'];
 
 export const Home: React.FC = () => {
