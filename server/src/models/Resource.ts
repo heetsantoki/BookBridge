@@ -9,12 +9,12 @@ export interface IResource extends Document {
   semester: number;
   courseCode: string;
   condition: 'New' | 'Like New' | 'Good' | 'Fair' | 'Poor';
-  exchangeType: 'Borrow' | 'Rent' | 'Buy' | 'Free';
+  exchangeType: 'Borrow' | 'Rent' | 'Buy' | 'Free' | 'Exchange' | 'Both';
   price: number;
   images: string[];
   fileUrl?: string; // PDF link for E-books or digital notes
   owner: mongoose.Types.ObjectId;
-  status: 'Available' | 'Pending' | 'Exchanged';
+  status: 'Available' | 'Pending' | 'Reserved' | 'Exchanged' | 'Sold';
   createdAt: Date;
   updatedAt: Date;
 }
@@ -38,7 +38,7 @@ const ResourceSchema: Schema = new Schema({
   },
   exchangeType: {
     type: String,
-    enum: ['Borrow', 'Rent', 'Buy', 'Free'],
+    enum: ['Borrow', 'Rent', 'Buy', 'Free', 'Exchange', 'Both'],
     required: true
   },
   price: { type: Number, default: 0 },
@@ -47,7 +47,7 @@ const ResourceSchema: Schema = new Schema({
   owner: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   status: {
     type: String,
-    enum: ['Available', 'Pending', 'Exchanged'],
+    enum: ['Available', 'Pending', 'Reserved', 'Exchanged', 'Sold'],
     default: 'Available'
   }
 }, {

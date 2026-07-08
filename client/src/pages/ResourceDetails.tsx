@@ -20,6 +20,15 @@ export const ResourceDetails: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [requestStatus, setRequestStatus] = useState<'none' | 'pending' | 'approved'>('none');
 
+  // Exchange request states
+  const [exchangeRequestStatus, setExchangeRequestStatus] = useState<'none' | 'pending' | 'accepted' | 'completed'>('none');
+  const [showExchangeModal, setShowExchangeModal] = useState(false);
+  const [myAvailableBooks, setMyAvailableBooks] = useState<any[]>([]);
+  const [selectedBookId, setSelectedBookId] = useState('');
+  const [messageInput, setMessageInput] = useState('');
+  const [submittingExchange, setSubmittingExchange] = useState(false);
+  const [loadingAvailableBooks, setLoadingAvailableBooks] = useState(false);
+
   // Review states
   const [reviews, setReviews] = useState<any[]>([]);
   const [avgRating, setAvgRating] = useState(0);
@@ -58,11 +67,32 @@ export const ResourceDetails: React.FC = () => {
           if (matchingRequest.status === 'Approved') {
             setRequestStatus('approved');
             setActiveTransactionId(matchingRequest._id);
+            setContactShared(true);
           } else if (matchingRequest.status === 'Completed') {
             setRequestStatus('approved'); // Allow reviewing
             setActiveTransactionId(matchingRequest._id);
+            setContactShared(true);
           } else if (matchingRequest.status === 'Pending') {
             setRequestStatus('pending');
+          }
+        }
+      }
+
+      // Check exchange requests status
+      if (user) {
+        const exchRes = await axios.get('http://localhost:5000/api/exchange-requests/my-requests');
+        if (exchRes.data.success) {
+          const matchingExch = exchRes.data.outgoing.find((t: any) => t.requestedBook._id === id);
+          if (matchingExch) {
+            if (matchingExch.status === 'Accepted') {
+              setExchangeRequestStatus('accepted');
+              setContactShared(true);
+            } else if (matchingExch.status === 'Completed') {
+              setExchangeRequestStatus('completed');
+              setContactShared(true);
+            } else if (matchingExch.status === 'Pending') {
+              setExchangeRequestStatus('pending');
+            }
           }
         }
       }
@@ -70,6 +100,51 @@ export const ResourceDetails: React.FC = () => {
       console.error('Error fetching resource details:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleOpenExchangeModal = async () => {
+    if (!user) return navigate('/auth');
+    setShowExchangeModal(true);
+    setLoadingAvailableBooks(true);
+    try {
+      const res = await axios.get(`http://localhost:5000/api/resources?ownerId=${user.id}`);
+      if (res.data.success) {
+        const available = res.data.resources.filter((b: any) => b.status === 'Available');
+        setMyAvailableBooks(available);
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Failed to load your available books.');
+    } finally {
+      setLoadingAvailableBooks(false);
+    }
+  };
+
+  const submitExchangeRequest = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedBookId) {
+      alert('Please select a book to offer for exchange');
+      return;
+    }
+    setSubmittingExchange(true);
+    try {
+      const res = await axios.post('http://localhost:5000/api/exchange-requests', {
+        requestedBookId: id,
+        offeredBookId: selectedBookId,
+        message: messageInput
+      });
+      if (res.data.success) {
+        setExchangeRequestStatus('pending');
+        setShowExchangeModal(false);
+        setMessageInput('');
+        setSelectedBookId('');
+        fetchDetails();
+      }
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'Failed to submit exchange request');
+    } finally {
+      setSubmittingExchange(false);
     }
   };
 
@@ -289,22 +364,66 @@ export const ResourceDetails: React.FC = () => {
               </div>
             ) : (
               <div className="flex flex-col gap-3.5">
-                {requestStatus === 'approved' ? (
-                  <button disabled className="glass-btn-accent w-full text-xs font-bold uppercase tracking-wider py-3.5 flex items-center justify-center gap-2 bg-emerald-600 border-transparent shadow-glow-emerald cursor-default">
-                    <ShieldCheck className="h-4.5 w-4.5 animate-pulse" /> Exchange Approved
+                {resource.status === 'Exchanged' || resource.status === 'Sold' ? (
+                  <button disabled className="glass-btn-secondary w-full text-xs font-bold uppercase tracking-wider py-3.5 cursor-not-allowed text-dark-550 bg-white/[0.02] border-white/[0.06]">
+                    Resource Sold / Exchanged
                   </button>
-                ) : requestStatus === 'pending' ? (
-                  <button disabled className="glass-btn-secondary w-full text-xs font-bold uppercase tracking-wider py-3.5 flex items-center justify-center gap-2 text-brand-400 bg-white/[0.02] border-white/[0.06] cursor-default">
-                    <RefreshCw className="h-4 w-4 animate-spin" /> Pending Approval
+                ) : resource.status === 'Reserved' ? (
+                  <button disabled className="glass-btn-secondary w-full text-xs font-bold uppercase tracking-wider py-3.5 cursor-not-allowed text-amber-500 bg-white/[0.02] border-white/[0.06]">
+                    Resource Reserved
                   </button>
                 ) : (
-                  <button 
-                    onClick={requestExchange} 
-                    disabled={!!(user && !user.isVerified)}
-                    className="glass-btn-primary w-full text-xs font-bold uppercase tracking-wider py-3.5 flex items-center justify-center gap-2 hover:-translate-y-0.5 shadow-glow-indigo"
-                  >
-                    Request Exchange
-                  </button>
+                  <>
+                    {(exchangeRequestStatus === 'accepted' || requestStatus === 'approved') ? (
+                      <button disabled className="glass-btn-accent w-full text-xs font-bold uppercase tracking-wider py-3.5 flex items-center justify-center gap-2 bg-emerald-600 border-transparent shadow-glow-emerald cursor-default">
+                        <ShieldCheck className="h-4.5 w-4.5 animate-pulse" /> Exchange Approved
+                      </button>
+                    ) : exchangeRequestStatus === 'completed' ? (
+                      <button disabled className="glass-btn-secondary w-full text-xs font-bold uppercase tracking-wider py-3.5 flex items-center justify-center gap-2 text-blue-400 bg-white/[0.02] border-white/[0.06] cursor-default">
+                        Exchange Completed
+                      </button>
+                    ) : (
+                      <div className="flex flex-col gap-3 w-full">
+                        {/* 1. Exchange workflow button (if type is Exchange or Both) */}
+                        {(resource.exchangeType === 'Exchange' || resource.exchangeType === 'Both') && (
+                          exchangeRequestStatus === 'pending' ? (
+                            <button disabled className="glass-btn-secondary w-full text-xs font-bold uppercase tracking-wider py-3.5 flex items-center justify-center gap-2 text-brand-400 bg-white/[0.02] border-white/[0.06] cursor-default">
+                              <RefreshCw className="h-4 w-4 animate-spin" /> Pending Exchange Approval
+                            </button>
+                          ) : (
+                            <button 
+                              onClick={handleOpenExchangeModal} 
+                              disabled={!!(user && !user.isVerified)}
+                              className="glass-btn-primary w-full text-xs font-bold uppercase tracking-wider py-3.5 flex items-center justify-center gap-2 hover:-translate-y-0.5 shadow-glow-indigo bg-pink-600 border-transparent text-white"
+                            >
+                              Request Exchange
+                            </button>
+                          )
+                        )}
+
+                        {/* 2. Standard transaction button (if type is NOT Exchange) */}
+                        {resource.exchangeType !== 'Exchange' && (
+                          requestStatus === 'pending' ? (
+                            <button disabled className="glass-btn-secondary w-full text-xs font-bold uppercase tracking-wider py-3.5 flex items-center justify-center gap-2 text-brand-400 bg-white/[0.02] border-white/[0.06] cursor-default">
+                              <RefreshCw className="h-4 w-4 animate-spin" /> Pending Approval
+                            </button>
+                          ) : (
+                            <button 
+                              onClick={requestExchange} 
+                              disabled={!!(user && !user.isVerified)}
+                              className="glass-btn-primary w-full text-xs font-bold uppercase tracking-wider py-3.5 flex items-center justify-center gap-2 hover:-translate-y-0.5 shadow-glow-indigo"
+                            >
+                              {resource.exchangeType === 'Borrow' && 'Request Borrow'}
+                              {resource.exchangeType === 'Rent' && 'Request Rent'}
+                              {resource.exchangeType === 'Buy' && 'Request Purchase'}
+                              {resource.exchangeType === 'Free' && 'Request Giveaway'}
+                              {resource.exchangeType === 'Both' && 'Request Buy / Rent / Borrow'}
+                            </button>
+                          )
+                        )}
+                      </div>
+                    )}
+                  </>
                 )}
 
                 <div className="grid grid-cols-2 gap-3.5">
@@ -437,6 +556,78 @@ export const ResourceDetails: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Exchange Modal */}
+      {showExchangeModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-dark-950/80 backdrop-blur-sm p-4 overflow-y-auto">
+          <div className="glass-card max-w-lg w-full p-6 sm:p-8 flex flex-col gap-5 max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center border-b border-dark-850 pb-4">
+              <h3 className="font-outfit text-lg font-bold text-white">Select a Book to Offer</h3>
+              <button onClick={() => setShowExchangeModal(false)} className="text-dark-400 hover:text-white">
+                <span className="text-xl font-bold">&times;</span>
+              </button>
+            </div>
+
+            {loadingAvailableBooks ? (
+              <div className="flex flex-col items-center justify-center py-10 gap-2">
+                <RefreshCw className="h-6 w-6 text-brand-400 animate-spin" />
+                <span className="text-xs text-dark-400">Loading your books...</span>
+              </div>
+            ) : myAvailableBooks.length === 0 ? (
+              <div className="text-center py-8">
+                <p className="text-sm text-dark-400">You don't have any books with status <strong>Available</strong>.</p>
+                <p className="text-xs text-dark-500 mt-1">Please list a book as Available first to offer it in exchange.</p>
+                <Link to="/create-listing" className="glass-btn-primary py-2 px-4 text-xs mt-4 inline-block">List a Book</Link>
+              </div>
+            ) : (
+              <form onSubmit={submitExchangeRequest} className="flex flex-col gap-4">
+                <div className="flex flex-col gap-2.5 max-h-60 overflow-y-auto pr-1">
+                  {myAvailableBooks.map((book) => (
+                    <label key={book._id} className={`flex gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
+                      selectedBookId === book._id ? 'border-brand-500 bg-brand-500/5' : 'border-dark-800 bg-dark-900/40 hover:border-dark-700'
+                    }`}>
+                      <input
+                        type="radio"
+                        name="offeredBook"
+                        value={book._id}
+                        checked={selectedBookId === book._id}
+                        onChange={() => setSelectedBookId(book._id)}
+                        className="mt-1"
+                      />
+                      <div className="flex gap-3 text-left">
+                        <img src={getImageUrl(book.images[0])} alt="" className="h-12 w-9 object-cover rounded bg-dark-950 border border-dark-850" />
+                        <div className="text-left">
+                          <span className="text-[10px] text-dark-400 block font-bold uppercase">{book.resourceType}</span>
+                          <span className="text-xs font-bold text-white line-clamp-1">{book.title}</span>
+                          <span className="text-[10px] text-dark-500 block">Course: {book.courseCode} | Sem {book.semester}</span>
+                        </div>
+                      </div>
+                    </label>
+                  ))}
+                </div>
+
+                <div className="flex flex-col gap-1.5 text-left">
+                  <label className="text-xs font-bold text-dark-350">Message (Optional)</label>
+                  <textarea
+                    placeholder="e.g. I would like to exchange my Data Structures book."
+                    className="glass-input text-xs h-20 resize-none py-2"
+                    value={messageInput}
+                    onChange={(e) => setMessageInput(e.target.value)}
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={submittingExchange}
+                  className="glass-btn-primary py-2.5 text-xs font-bold w-full"
+                >
+                  {submittingExchange ? 'Submitting Request...' : 'Send Exchange Request'}
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

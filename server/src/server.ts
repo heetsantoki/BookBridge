@@ -2,6 +2,11 @@ import dotenv from 'dotenv';
 // Load environment variables
 dotenv.config();
 
+import dns from 'dns';
+// Override local DNS to resolve MongoDB Atlas SRV records correctly
+dns.setServers(['8.8.8.8', '1.1.1.1']);
+
+
 import express from 'express';
 import http from 'http';
 import { Server } from 'socket.io';
@@ -18,6 +23,7 @@ import notificationRoutes from './routes/notificationRoutes';
 import reviewRoutes from './routes/reviewRoutes';
 import adminRoutes from './routes/adminRoutes';
 import aiRoutes from './routes/aiRoutes';
+import exchangeRequestRoutes from './routes/exchangeRequestRoutes';
 
 
 const app = express();
@@ -47,6 +53,7 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/exchange-requests', exchangeRequestRoutes);
 
 // Fallback status check
 app.get('/health', (req, res) => {
