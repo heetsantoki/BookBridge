@@ -79,6 +79,8 @@ export const getConversations = async (req: AuthRequest, res: Response) => {
 
     for (const msg of messages) {
       if (!conversationsMap[msg.conversationId]) {
+        if (!msg.sender || !msg.receiver) continue; // Skip if sender or receiver is deleted
+
         const senderIdStr = (msg.sender as any)._id ? (msg.sender as any)._id.toString() : msg.sender.toString();
         const otherUser = senderIdStr === userId ? (msg.receiver as any) : (msg.sender as any);
         const resource = msg.resource as any;

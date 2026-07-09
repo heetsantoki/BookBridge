@@ -98,7 +98,11 @@ export const getUserExchangeRequests = async (req: AuthRequest, res: Response) =
       .populate('receiver', 'name avatar department semester email phone')
       .sort({ createdAt: -1 });
 
-    res.status(200).json({ success: true, incoming, outgoing });
+    // Filter out exchange requests with deleted resources/users
+    const validIncoming = incoming.filter(r => r.requestedBook && r.offeredBook && r.requester);
+    const validOutgoing = outgoing.filter(r => r.requestedBook && r.offeredBook && r.receiver);
+
+    res.status(200).json({ success: true, incoming: validIncoming, outgoing: validOutgoing });
   } catch (error: any) {
     console.error('Get User Exchange Requests Error:', error);
     res.status(500).json({ success: false, message: error.message });

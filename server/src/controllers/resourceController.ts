@@ -273,7 +273,8 @@ export const getWishlist = async (req: AuthRequest, res: Response) => {
       return res.status(404).json({ success: false, message: 'User not found' });
     }
 
-    res.status(200).json({ success: true, wishlist: user.wishlist });
+    const cleanWishlist = user.wishlist.filter(item => item !== null);
+    res.status(200).json({ success: true, wishlist: cleanWishlist });
   } catch (error: any) {
     console.error('Get Wishlist Error:', error);
     res.status(500).json({ success: false, message: error.message });

@@ -62,7 +62,7 @@ export const ResourceDetails: React.FC = () => {
       // Check trade request status
       const exchangesRes = await axios.get('http://localhost:5000/api/transactions/my-exchanges');
       if (exchangesRes.data.success) {
-        const matchingRequest = exchangesRes.data.outgoing.find((t: any) => t.resource._id === id);
+        const matchingRequest = exchangesRes.data.outgoing.find((t: any) => t.resource?._id === id);
         if (matchingRequest) {
           if (matchingRequest.status === 'Approved') {
             setRequestStatus('approved');
@@ -82,7 +82,7 @@ export const ResourceDetails: React.FC = () => {
       if (user) {
         const exchRes = await axios.get('http://localhost:5000/api/exchange-requests/my-requests');
         if (exchRes.data.success) {
-          const matchingExch = exchRes.data.outgoing.find((t: any) => t.requestedBook._id === id);
+          const matchingExch = exchRes.data.outgoing.find((t: any) => t.requestedBook?._id === id);
           if (matchingExch) {
             if (matchingExch.status === 'Accepted') {
               setExchangeRequestStatus('accepted');

@@ -353,7 +353,7 @@ export const Dashboard: React.FC = () => {
                   </div>
 
                   {myResources.map((res) => {
-                    const matchRequests = incomingRequests.filter((req) => req.resource._id === res._id);
+                    const matchRequests = incomingRequests.filter((req) => req.resource?._id === res._id);
                     return (
                       <div key={res._id} className="glass-card overflow-hidden border-white/[0.05] bg-dark-900/10 rounded-2xl">
                         <div className="p-5 flex flex-col sm:flex-row justify-between sm:items-center gap-4 bg-white/[0.01]">
@@ -440,20 +440,20 @@ export const Dashboard: React.FC = () => {
                   {outgoingRequests.map((req) => (
                     <div key={req._id} className="glass-card p-5 flex flex-col md:flex-row justify-between md:items-center gap-4 border border-white/[0.05] bg-dark-900/10 rounded-2xl text-left">
                       <div className="flex gap-4">
-                        <img src={getImageUrl(req.resource.images[0])} alt="" className="h-14 w-11 object-cover bg-dark-950 rounded border border-white/[0.06]" />
+                        <img src={getImageUrl(req.resource?.images?.[0])} alt="" className="h-14 w-11 object-cover bg-dark-950 rounded border border-white/[0.06]" />
                         <div className="flex flex-col justify-between py-0.5">
                           <div>
-                            <span className="badge-sky text-[8px] px-2 py-0.5 rounded-full border border-sky-500/25">{req.resource.resourceType}</span>
-                            <h4 className="text-sm font-extrabold text-white mt-1.5 line-clamp-1">{req.resource.title}</h4>
+                            <span className="badge-sky text-[8px] px-2 py-0.5 rounded-full border border-sky-500/25">{req.resource?.resourceType || 'Resource'}</span>
+                            <h4 className="text-sm font-extrabold text-white mt-1.5 line-clamp-1">{req.resource?.title || 'Deleted Resource'}</h4>
                           </div>
-                          <p className="text-[10px] text-dark-450 font-bold uppercase tracking-wider mt-1">Owner: {req.owner.name} | Mode: {req.exchangeType}</p>
+                          <p className="text-[10px] text-dark-450 font-bold uppercase tracking-wider mt-1">Owner: {req.owner?.name || 'Unknown User'} | Mode: {req.exchangeType}</p>
                         </div>
                       </div>
 
                       <div className="flex flex-col gap-2 md:items-end">
                         <span className={getStatusBadge(req.status)}>{req.status}</span>
                         {/* Display unlocked details if request is approved */}
-                        {req.status === 'Approved' && (
+                        {req.status === 'Approved' && req.owner && req.resource && (
                           <div className="flex flex-col gap-2 p-3 rounded-2xl border border-emerald-500/25 bg-emerald-500/5 text-xs text-emerald-400 mt-2 shadow-glow-emerald">
                             <div className="flex items-center gap-1.5"><Mail className="h-3.5 w-3.5 text-emerald-500" /> <span className="font-semibold">{req.owner.email}</span></div>
                             {req.owner.phone && (
@@ -486,23 +486,23 @@ export const Dashboard: React.FC = () => {
                     <div key={req._id} className="glass-card p-5 flex flex-col gap-4 text-left">
                       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-dark-850 pb-3">
                         <div className="flex items-center gap-3">
-                          <img src={req.requester.avatar} className="h-9 w-9 rounded-full bg-dark-900" alt="" />
+                          <img src={req.requester?.avatar} className="h-9 w-9 rounded-full bg-dark-900 object-cover" alt="" />
                           <div>
-                            <span className="text-sm font-bold text-dark-100">{req.requester.name}</span>
-                            <span className="text-[10px] text-dark-450 block">Dept: {req.requester.department} | Sem {req.requester.semester}</span>
+                            <span className="text-sm font-bold text-dark-100">{req.requester?.name || 'Unknown User'}</span>
+                            <span className="text-[10px] text-dark-450 block">Dept: {req.requester?.department || 'N/A'} | Sem {req.requester?.semester || 'N/A'}</span>
                           </div>
                         </div>
-                        <span className="text-[10px] text-dark-500 font-semibold">{new Date(req.createdAt).toLocaleDateString()}</span>
+                        <span className="text-[10px] text-dark-500 font-semibold">{req.createdAt ? new Date(req.createdAt).toLocaleDateString() : ''}</span>
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
                         <div className="flex flex-col gap-1.5 p-3 rounded-xl bg-dark-950/20 border border-dark-900">
                           <span className="text-[10px] text-brand-400 font-bold uppercase tracking-wider">Your Book (Requested)</span>
                           <div className="flex gap-3">
-                            <img src={getImageUrl(req.requestedBook.images[0])} alt="" className="h-12 w-9 object-cover rounded bg-dark-950 border border-dark-850" />
+                            <img src={getImageUrl(req.requestedBook?.images?.[0])} alt="" className="h-12 w-9 object-cover rounded bg-dark-950 border border-dark-850" />
                             <div>
-                              <h5 className="text-xs font-bold text-white line-clamp-1">{req.requestedBook.title}</h5>
-                              <p className="text-[10px] text-dark-450 mt-0.5">Course: {req.requestedBook.courseCode}</p>
+                              <h5 className="text-xs font-bold text-white line-clamp-1">{req.requestedBook?.title || 'Deleted Book'}</h5>
+                              <p className="text-[10px] text-dark-450 mt-0.5">Course: {req.requestedBook?.courseCode || 'N/A'}</p>
                             </div>
                           </div>
                         </div>
@@ -511,20 +511,22 @@ export const Dashboard: React.FC = () => {
                           <span className="text-[10px] text-pink-400 font-bold uppercase tracking-wider">Their Offered Book</span>
                           <div className="flex gap-3 justify-between items-center">
                             <div className="flex gap-3">
-                              <img src={getImageUrl(req.offeredBook.images[0])} alt="" className="h-12 w-9 object-cover rounded bg-dark-950 border border-dark-850" />
+                              <img src={getImageUrl(req.offeredBook?.images?.[0])} alt="" className="h-12 w-9 object-cover rounded bg-dark-950 border border-dark-850" />
                               <div>
-                                <h5 className="text-xs font-bold text-white line-clamp-1">{req.offeredBook.title}</h5>
-                                <p className="text-[10px] text-dark-450 mt-0.5">Course: {req.offeredBook.courseCode}</p>
+                                <h5 className="text-xs font-bold text-white line-clamp-1">{req.offeredBook?.title || 'Deleted Book'}</h5>
+                                <p className="text-[10px] text-dark-450 mt-0.5">Course: {req.offeredBook?.courseCode || 'N/A'}</p>
                               </div>
                             </div>
-                            <a 
-                              href={`/resources/${req.offeredBook._id}`} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="text-[10px] uppercase font-bold bg-dark-950 border border-dark-800 text-dark-300 hover:text-white px-2 py-1 rounded transition-colors"
-                            >
-                              View Offered Book
-                            </a>
+                            {req.offeredBook && (
+                              <a 
+                                href={`/resources/${req.offeredBook._id}`} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="text-[10px] uppercase font-bold bg-dark-950 border border-dark-800 text-dark-300 hover:text-white px-2 py-1 rounded transition-colors"
+                              >
+                                View Offered Book
+                              </a>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -554,7 +556,7 @@ export const Dashboard: React.FC = () => {
                               </button>
                             </>
                           )}
-                          {req.status === 'Accepted' && (
+                          {req.status === 'Accepted' && req.requester && req.requestedBook && (
                             <>
                               <div className="flex flex-col gap-1 text-[11px] text-emerald-400 border border-emerald-500/20 bg-emerald-500/5 p-2 rounded-xl">
                                 <div>Email: {req.requester.email}</div>
@@ -596,10 +598,10 @@ export const Dashboard: React.FC = () => {
                       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-dark-850 pb-3">
                         <div className="flex items-center gap-3">
                           <span className="text-xs font-bold text-dark-450">Seller Name:</span>
-                          <span className="text-xs font-bold text-white">{req.receiver.name}</span>
-                          <span className="text-[10px] text-dark-450">({req.receiver.department})</span>
+                          <span className="text-xs font-bold text-white">{req.receiver?.name || 'Unknown User'}</span>
+                          <span className="text-[10px] text-dark-450">({req.receiver?.department || 'N/A'})</span>
                         </div>
-                        <span className="text-[10px] text-dark-500 font-semibold">{new Date(req.createdAt).toLocaleDateString()}</span>
+                        <span className="text-[10px] text-dark-500 font-semibold">{req.createdAt ? new Date(req.createdAt).toLocaleDateString() : ''}</span>
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
@@ -607,30 +609,32 @@ export const Dashboard: React.FC = () => {
                           <span className="text-[10px] text-brand-400 font-bold uppercase tracking-wider">Requested Book</span>
                           <div className="flex gap-3 justify-between items-center">
                             <div className="flex gap-3">
-                              <img src={getImageUrl(req.requestedBook.images[0])} alt="" className="h-12 w-9 object-cover rounded bg-dark-950 border border-dark-850" />
+                              <img src={getImageUrl(req.requestedBook?.images?.[0])} alt="" className="h-12 w-9 object-cover rounded bg-dark-950 border border-dark-850" />
                               <div>
-                                <h5 className="text-xs font-bold text-white line-clamp-1">{req.requestedBook.title}</h5>
-                                <p className="text-[10px] text-dark-450 mt-0.5">Course: {req.requestedBook.courseCode}</p>
+                                <h5 className="text-xs font-bold text-white line-clamp-1">{req.requestedBook?.title || 'Deleted Book'}</h5>
+                                <p className="text-[10px] text-dark-450 mt-0.5">Course: {req.requestedBook?.courseCode || 'N/A'}</p>
                               </div>
                             </div>
-                            <a 
-                              href={`/resources/${req.requestedBook._id}`} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="text-[10px] uppercase font-bold bg-dark-950 border border-dark-800 text-dark-300 hover:text-white px-2 py-1 rounded transition-colors"
-                            >
-                              View Requested Book
-                            </a>
+                            {req.requestedBook && (
+                              <a 
+                                href={`/resources/${req.requestedBook._id}`} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="text-[10px] uppercase font-bold bg-dark-950 border border-dark-800 text-dark-300 hover:text-white px-2 py-1 rounded transition-colors"
+                              >
+                                View Requested Book
+                              </a>
+                            )}
                           </div>
                         </div>
 
                         <div className="flex flex-col gap-1.5 p-3 rounded-xl bg-dark-950/20 border border-dark-900">
                           <span className="text-[10px] text-pink-400 font-bold uppercase tracking-wider">Your Offered Book</span>
                           <div className="flex gap-3">
-                            <img src={getImageUrl(req.offeredBook.images[0])} alt="" className="h-12 w-9 object-cover rounded bg-dark-950 border border-dark-850" />
+                            <img src={getImageUrl(req.offeredBook?.images?.[0])} alt="" className="h-12 w-9 object-cover rounded bg-dark-950 border border-dark-850" />
                             <div>
-                              <h5 className="text-xs font-bold text-white line-clamp-1">{req.offeredBook.title}</h5>
-                              <p className="text-[10px] text-dark-450 mt-0.5">Course: {req.offeredBook.courseCode}</p>
+                              <h5 className="text-xs font-bold text-white line-clamp-1">{req.offeredBook?.title || 'Deleted Book'}</h5>
+                              <p className="text-[10px] text-dark-450 mt-0.5">Course: {req.offeredBook?.courseCode || 'N/A'}</p>
                             </div>
                           </div>
                         </div>
@@ -653,7 +657,7 @@ export const Dashboard: React.FC = () => {
                               Cancel Request
                             </button>
                           )}
-                          {req.status === 'Accepted' && (
+                          {req.status === 'Accepted' && req.receiver && req.requestedBook && (
                             <>
                               <div className="flex flex-col gap-1 text-[11px] text-emerald-400 border border-emerald-500/20 bg-emerald-500/5 p-2 rounded-xl">
                                 <div>Email: {req.receiver.email}</div>

@@ -172,8 +172,8 @@ export const Home: React.FC = () => {
             </button>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {recommendations.map((item) => (
-              <div key={item.resource._id} className="relative flex flex-col h-full group">
+            {recommendations.filter(item => item && item.resource).map((item) => (
+              <div key={item.resource?._id} className="relative flex flex-col h-full group">
                 {/* AI Reason Badge overlay */}
                 <div className="absolute top-2 right-2 bg-gradient-to-r from-brand-650 to-brand-500 text-white text-[9px] font-extrabold px-3 py-1 rounded-full shadow-lg border border-brand-400/35 z-10 max-w-[200px] truncate uppercase tracking-wider shadow-glow-indigo">
                   AI Suggestion

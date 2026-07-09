@@ -78,7 +78,11 @@ export const getUserTransactions = async (req: AuthRequest, res: Response) => {
       .populate('owner', 'name avatar department semester email phone')
       .sort({ createdAt: -1 });
 
-    res.status(200).json({ success: true, incoming, outgoing });
+    // Filter out transactions with deleted resources/users
+    const validIncoming = incoming.filter(t => t.resource && t.requester);
+    const validOutgoing = outgoing.filter(t => t.resource && t.owner);
+
+    res.status(200).json({ success: true, incoming: validIncoming, outgoing: validOutgoing });
   } catch (error: any) {
     console.error('Get User Transactions Error:', error);
     res.status(500).json({ success: false, message: error.message });

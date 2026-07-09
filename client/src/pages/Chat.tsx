@@ -59,7 +59,7 @@ export const Chat: React.FC = () => {
         // Handle selecting chat based on query strings or first item
         if (partnerQueryId && resourceQueryId) {
           const matchingChat = res.data.conversations.find((c: any) => 
-            c.otherUser._id === partnerQueryId && c.resource._id === resourceQueryId
+            c.otherUser?._id === partnerQueryId && c.resource?._id === resourceQueryId
           );
           if (matchingChat) {
             setSelectedChat(matchingChat);
@@ -98,7 +98,7 @@ export const Chat: React.FC = () => {
   };
 
   const fetchMessages = async (chat: any) => {
-    if (!chat) return;
+    if (!chat || !chat.otherUser || !chat.resource) return;
     setLoadingMsgs(true);
     try {
       if (chat.conversationId === 'temp_chat_id') {
@@ -215,6 +215,10 @@ export const Chat: React.FC = () => {
         }
       }
 
+      if (!selectedChat?.otherUser || !selectedChat?.resource) {
+        return;
+      }
+
       const res = await axios.post('http://localhost:5000/api/messages', {
         receiverId: selectedChat.otherUser._id || selectedChat.otherUser.id,
         resourceId: selectedChat.resource._id,
@@ -303,17 +307,17 @@ export const Chat: React.FC = () => {
                       isSelected ? 'bg-brand-500/10 border-l-4 border-brand-500' : 'border-l-4 border-transparent'
                     }`}
                   >
-                    <img src={chat.otherUser.avatar} className="h-9 w-9 rounded-lg bg-dark-950 border border-white/[0.06] object-cover" alt="" />
+                    <img src={chat.otherUser?.avatar} className="h-9 w-9 rounded-lg bg-dark-950 border border-white/[0.06] object-cover" alt="" />
                     <div className="flex-grow min-w-0">
                       <div className="flex justify-between items-center">
-                        <span className="text-xs font-extrabold truncate text-dark-100">{chat.otherUser.name}</span>
+                        <span className="text-xs font-extrabold truncate text-dark-100">{chat.otherUser?.name || 'Unknown User'}</span>
                         {chat.lastMessage && (
                           <span className="text-[9px] text-dark-500 font-bold uppercase tracking-wider">
                             {new Date(chat.lastMessage.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </span>
                         )}
                       </div>
-                      <span className="text-[10px] text-brand-350 font-bold uppercase tracking-wider truncate block mt-1">{chat.resource.title}</span>
+                      <span className="text-[10px] text-brand-350 font-bold uppercase tracking-wider truncate block mt-1">{chat.resource?.title || 'Deleted Resource'}</span>
                       {chat.lastMessage && (
                         <p className="text-[11px] text-dark-400 truncate mt-1 leading-normal font-medium">
                           {chat.lastMessage.image ? '📷 Sent a photo' : chat.lastMessage.content}
@@ -334,11 +338,11 @@ export const Chat: React.FC = () => {
               {/* Active Chat Header */}
               <div className="p-4 border-b border-white/[0.06] bg-dark-950/40 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <img src={selectedChat.otherUser.avatar} className="h-9 w-9 rounded-lg bg-dark-950 border border-white/[0.06] object-cover" alt="" />
+                  <img src={selectedChat.otherUser?.avatar} className="h-9 w-9 rounded-lg bg-dark-950 border border-white/[0.06] object-cover" alt="" />
                   <div>
-                    <span className="text-xs font-extrabold text-white">{selectedChat.otherUser.name}</span>
-                    <span className="text-[10px] text-dark-400 font-medium block flex items-center gap-1 mt-0.5">
-                      <BookOpen className="h-3.5 w-3.5 text-brand-400" /> Listing: {selectedChat.resource.title}
+                    <span className="text-xs font-extrabold text-white">{selectedChat.otherUser?.name || 'Unknown User'}</span>
+                    <span className="text-[10px] text-dark-440 font-medium block flex items-center gap-1 mt-0.5">
+                      <BookOpen className="h-3.5 w-3.5 text-brand-400" /> Listing: {selectedChat.resource?.title || 'Deleted Resource'}
                     </span>
                   </div>
                 </div>
