@@ -167,7 +167,7 @@ export const Auth: React.FC = () => {
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-500/10 border border-brand-500/20 text-brand-400 mb-6 shadow-glow-indigo">
             <Upload className="h-6 w-6" />
           </div>
-          
+
           <h2 className="font-outfit text-2xl font-extrabold text-white mb-2 uppercase tracking-wide">College ID Verification</h2>
           <p className="text-xs text-dark-300 mb-6 leading-relaxed">
             Because you registered with a personal email, we need to verify your university affiliation. Upload a photo of your Student ID card to unlock listing creation and borrowing.
@@ -225,7 +225,7 @@ export const Auth: React.FC = () => {
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 mb-6 shadow-glow-emerald">
             <CheckCircle2 className="h-6 w-6" />
           </div>
-          
+
           <h2 className="font-outfit text-2xl font-extrabold text-white mb-2 uppercase tracking-wide">Verification Submitted!</h2>
           <p className="text-xs text-dark-300 mb-6 leading-relaxed">
             Your student verification request has been successfully queued. An administrator will review your Student ID upload shortly.
@@ -293,9 +293,8 @@ export const Auth: React.FC = () => {
                 type="button"
                 onClick={handleResendOtp}
                 disabled={resendCooldown > 0}
-                className={`text-xs font-bold uppercase tracking-wider ${
-                  resendCooldown > 0 ? 'text-dark-500 cursor-not-allowed' : 'text-brand-400 hover:text-brand-300'
-                }`}
+                className={`text-xs font-bold uppercase tracking-wider ${resendCooldown > 0 ? 'text-dark-500 cursor-not-allowed' : 'text-brand-400 hover:text-brand-300'
+                  }`}
               >
                 {resendCooldown > 0 ? `Resend Code (${resendCooldown}s)` : 'Resend Code'}
               </button>
@@ -321,13 +320,13 @@ export const Auth: React.FC = () => {
   return (
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center p-4">
       <div className="glass-card w-full max-w-4xl p-0 relative overflow-hidden animate-fade-in grid grid-cols-1 lg:grid-cols-12 border border-white/[0.06] bg-dark-900/40 shadow-2xl">
-        
+
         {/* Left Visual Panel */}
         <div className="lg:col-span-5 hidden lg:flex flex-col justify-between p-8 bg-gradient-to-br from-brand-600 via-brand-700 to-indigo-950 border-r border-white/[0.04] text-left relative overflow-hidden">
           {/* Decorative mesh glows */}
           <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-2xl pointer-events-none animate-pulse-slow" />
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-accent-500/10 rounded-full blur-2xl pointer-events-none animate-pulse-slow" />
-          
+
           <div className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10 shadow-lg">
               <BookOpen className="h-4.5 w-4.5 text-white" />

@@ -2,23 +2,27 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
-import { BookOpen, MessageSquare, Bell, User, LogOut, ChevronDown, ShieldAlert, Award, Plus } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
+import { BookOpen, MessageSquare, Bell, User, LogOut, ChevronDown, ShieldAlert, Award, Plus, Sun, Moon, Monitor } from 'lucide-react';
 import axios from 'axios';
-
+ 
 export const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
   const { socket } = useSocket();
+  const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
-
+ 
   const [unreadMsgCount, setUnreadMsgCount] = useState(0);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showThemeMenu, setShowThemeMenu] = useState(false);
   const [localNotifications, setLocalNotifications] = useState<any[]>([]);
-
+ 
   const notifRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
-
+  const themeRef = useRef<HTMLDivElement>(null);
+ 
   // Close dropdowns on outside click
   useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => {
@@ -27,6 +31,9 @@ export const Navbar: React.FC = () => {
       }
       if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
         setShowProfileMenu(false);
+      }
+      if (themeRef.current && !themeRef.current.contains(e.target as Node)) {
+        setShowThemeMenu(false);
       }
     };
     document.addEventListener('mousedown', handleOutsideClick);
@@ -115,7 +122,7 @@ export const Navbar: React.FC = () => {
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-brand-500 to-accent-500 shadow-glass-primary group-hover:scale-105 transition-all duration-300">
                 <BookOpen className="h-5 w-5 text-white animate-pulse-slow" />
               </div>
-              <span className="font-outfit text-xl font-extrabold tracking-tight bg-gradient-to-r from-brand-300 via-brand-100 to-accent-400 bg-clip-text text-transparent group-hover:opacity-90 transition-opacity">
+              <span className="font-outfit text-xl font-extrabold tracking-tight text-gradient-logo group-hover:opacity-90 transition-opacity">
                 BookBridge
               </span>
             </Link>
@@ -126,9 +133,8 @@ export const Navbar: React.FC = () => {
             <div className="hidden md:flex items-center gap-4">
               <Link
                 to="/"
-                className={`text-[11px] font-bold uppercase tracking-wider transition-all duration-200 relative py-2 px-3 rounded-lg hover:bg-white/[0.02] ${
-                  isActive('/') ? 'text-brand-400 font-extrabold' : 'text-dark-300 hover:text-dark-100'
-                }`}
+                className={`text-[11px] font-bold uppercase tracking-wider transition-all duration-200 relative py-2 px-3 rounded-lg hover:bg-white/[0.02] ${isActive('/') ? 'text-brand-400 font-extrabold' : 'text-dark-300 hover:text-dark-100'
+                  }`}
               >
                 Browse Resources
                 {isActive('/') && (
@@ -137,9 +143,8 @@ export const Navbar: React.FC = () => {
               </Link>
               <Link
                 to="/dashboard"
-                className={`text-[11px] font-bold uppercase tracking-wider transition-all duration-200 relative py-2 px-3 rounded-lg hover:bg-white/[0.02] ${
-                  isActive('/dashboard') ? 'text-brand-400 font-extrabold' : 'text-dark-300 hover:text-dark-100'
-                }`}
+                className={`text-[11px] font-bold uppercase tracking-wider transition-all duration-200 relative py-2 px-3 rounded-lg hover:bg-white/[0.02] ${isActive('/dashboard') ? 'text-brand-400 font-extrabold' : 'text-dark-300 hover:text-dark-100'
+                  }`}
               >
                 My Exchanges
                 {isActive('/dashboard') && (
@@ -148,9 +153,8 @@ export const Navbar: React.FC = () => {
               </Link>
               <Link
                 to="/chat"
-                className={`text-[11px] font-bold uppercase tracking-wider transition-all duration-200 relative py-2 px-3 rounded-lg hover:bg-white/[0.02] flex items-center gap-1.5 ${
-                  isActive('/chat') ? 'text-brand-400 font-extrabold' : 'text-dark-300 hover:text-dark-100'
-                }`}
+                className={`text-[11px] font-bold uppercase tracking-wider transition-all duration-200 relative py-2 px-3 rounded-lg hover:bg-white/[0.02] flex items-center gap-1.5 ${isActive('/chat') ? 'text-brand-400 font-extrabold' : 'text-dark-300 hover:text-dark-100'
+                  }`}
               >
                 Chat
                 {unreadMsgCount > 0 && (
@@ -165,9 +169,8 @@ export const Navbar: React.FC = () => {
               {user.role === 'admin' && (
                 <Link
                   to="/admin"
-                  className={`text-[11px] font-bold uppercase tracking-wider transition-all duration-200 relative py-2 px-3 rounded-lg hover:bg-red-500/5 flex items-center gap-1.5 ${
-                    isActive('/admin') ? 'text-red-400 font-extrabold' : 'text-dark-300 hover:text-red-400'
-                  }`}
+                  className={`text-[11px] font-bold uppercase tracking-wider transition-all duration-200 relative py-2 px-3 rounded-lg hover:bg-red-500/5 flex items-center gap-1.5 ${isActive('/admin') ? 'text-red-400 font-extrabold' : 'text-dark-300 hover:text-red-400'
+                    }`}
                 >
                   <ShieldAlert className="h-4 w-4" />
                   Admin Portal
@@ -181,6 +184,59 @@ export const Navbar: React.FC = () => {
 
           {/* Right Actions */}
           <div className="flex items-center gap-3">
+            {/* Theme Dropdown */}
+            <div className="relative" ref={themeRef}>
+              <button
+                onClick={() => setShowThemeMenu(!showThemeMenu)}
+                className="relative p-2.5 text-dark-300 hover:text-dark-100 transition-all duration-200 hover:bg-white/[0.03] border border-transparent hover:border-white/[0.05] rounded-xl flex items-center justify-center"
+                title="Change theme"
+              >
+                {theme === 'light' && <Sun className="h-5 w-5" />}
+                {theme === 'dark' && <Moon className="h-5 w-5" />}
+                {theme === 'system' && <Monitor className="h-5 w-5" />}
+              </button>
+ 
+              {showThemeMenu && (
+                <div className="absolute right-0 mt-3 w-32 origin-top-right rounded-2xl border border-white/[0.08] bg-dark-900/90 shadow-2xl backdrop-blur-xl overflow-hidden divide-y divide-white/[0.06] animate-slide-up">
+                  <div className="py-1 text-left">
+                    <button
+                      onClick={() => {
+                        setTheme('light');
+                        setShowThemeMenu(false);
+                      }}
+                      className={`flex w-full items-center gap-2 px-3 py-2 text-[11px] font-bold uppercase tracking-wider transition-colors ${
+                        theme === 'light' ? 'text-brand-400 bg-white/[0.04]' : 'text-dark-300 hover:text-dark-100 hover:bg-white/[0.02]'
+                      }`}
+                    >
+                      <Sun className="h-4 w-4" /> Light
+                    </button>
+                    <button
+                      onClick={() => {
+                        setTheme('dark');
+                        setShowThemeMenu(false);
+                      }}
+                      className={`flex w-full items-center gap-2 px-3 py-2 text-[11px] font-bold uppercase tracking-wider transition-colors ${
+                        theme === 'dark' ? 'text-brand-400 bg-white/[0.04]' : 'text-dark-300 hover:text-dark-100 hover:bg-white/[0.02]'
+                      }`}
+                    >
+                      <Moon className="h-4 w-4" /> Dark
+                    </button>
+                    <button
+                      onClick={() => {
+                        setTheme('system');
+                        setShowThemeMenu(false);
+                      }}
+                      className={`flex w-full items-center gap-2 px-3 py-2 text-[11px] font-bold uppercase tracking-wider transition-colors ${
+                        theme === 'system' ? 'text-brand-400 bg-white/[0.04]' : 'text-dark-300 hover:text-dark-100 hover:bg-white/[0.02]'
+                      }`}
+                    >
+                      <Monitor className="h-4 w-4" /> System
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+ 
             {user ? (
               <>
                 {/* Share Resource Button */}
@@ -226,9 +282,8 @@ export const Navbar: React.FC = () => {
                             <div
                               key={notif._id}
                               onClick={() => handleNotificationClick(notif)}
-                              className={`p-3.5 text-left hover:bg-white/[0.02] cursor-pointer transition-colors duration-200 flex flex-col gap-1 ${
-                                !notif.isRead ? 'bg-brand-500/5' : ''
-                              }`}
+                              className={`p-3.5 text-left hover:bg-white/[0.02] cursor-pointer transition-colors duration-200 flex flex-col gap-1 ${!notif.isRead ? 'bg-brand-500/5' : ''
+                                }`}
                             >
                               <span className="text-xs font-bold text-dark-100">{notif.title}</span>
                               <span className="text-[11px] text-dark-400 leading-relaxed">{notif.message}</span>

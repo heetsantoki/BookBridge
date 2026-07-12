@@ -328,11 +328,10 @@ export const ResourceDetails: React.FC = () => {
             </div>
 
             {/* Privacy Alert Banner */}
-            <div className={`p-4 rounded-xl border flex gap-3 text-xs leading-normal transition-all duration-300 ${
-              contactShared 
-                ? 'bg-emerald-500/10 border-emerald-500/25 text-emerald-400 shadow-glow-emerald' 
+            <div className={`p-4 rounded-xl border flex gap-3 text-xs leading-normal transition-all duration-300 ${contactShared
+                ? 'bg-emerald-500/10 border-emerald-500/25 text-emerald-400 shadow-glow-emerald'
                 : 'bg-white/[0.02] border-white/[0.06] text-dark-400'
-            }`}>
+              }`}>
               {contactShared ? (
                 <>
                   <ShieldCheck className="h-5 w-5 text-emerald-400 shrink-0" />
@@ -391,8 +390,8 @@ export const ResourceDetails: React.FC = () => {
                               <RefreshCw className="h-4 w-4 animate-spin" /> Pending Exchange Approval
                             </button>
                           ) : (
-                            <button 
-                              onClick={handleOpenExchangeModal} 
+                            <button
+                              onClick={handleOpenExchangeModal}
                               disabled={!!(user && !user.isVerified)}
                               className="glass-btn-primary w-full text-xs font-bold uppercase tracking-wider py-3.5 flex items-center justify-center gap-2 hover:-translate-y-0.5 shadow-glow-indigo bg-pink-600 border-transparent text-white"
                             >
@@ -408,8 +407,8 @@ export const ResourceDetails: React.FC = () => {
                               <RefreshCw className="h-4 w-4 animate-spin" /> Pending Approval
                             </button>
                           ) : (
-                            <button 
-                              onClick={requestExchange} 
+                            <button
+                              onClick={requestExchange}
                               disabled={!!(user && !user.isVerified)}
                               className="glass-btn-primary w-full text-xs font-bold uppercase tracking-wider py-3.5 flex items-center justify-center gap-2 hover:-translate-y-0.5 shadow-glow-indigo"
                             >
@@ -430,9 +429,8 @@ export const ResourceDetails: React.FC = () => {
                   <button onClick={handleChatRedirect} className="glass-btn-secondary text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 py-3 hover:-translate-y-0.5">
                     <MessageSquare className="h-4 w-4 text-brand-400" /> Message
                   </button>
-                  <button onClick={toggleWishlist} className={`glass-btn-secondary text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 py-3 hover:-translate-y-0.5 ${
-                    isWishlisted ? 'border-brand-500/30 text-brand-400 bg-brand-500/5 shadow-glow-indigo' : ''
-                  }`}>
+                  <button onClick={toggleWishlist} className={`glass-btn-secondary text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 py-3 hover:-translate-y-0.5 ${isWishlisted ? 'border-brand-500/30 text-brand-400 bg-brand-500/5 shadow-glow-indigo' : ''
+                    }`}>
                     <Heart className={`h-4 w-4 ${isWishlisted ? 'fill-brand-400 text-brand-400' : ''}`} /> Wishlist
                   </button>
                 </div>
@@ -583,9 +581,8 @@ export const ResourceDetails: React.FC = () => {
               <form onSubmit={submitExchangeRequest} className="flex flex-col gap-4">
                 <div className="flex flex-col gap-2.5 max-h-60 overflow-y-auto pr-1">
                   {myAvailableBooks.map((book) => (
-                    <label key={book._id} className={`flex gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
-                      selectedBookId === book._id ? 'border-brand-500 bg-brand-500/5' : 'border-dark-800 bg-dark-900/40 hover:border-dark-700'
-                    }`}>
+                    <label key={book._id} className={`flex gap-3 p-3 rounded-xl border cursor-pointer transition-all ${selectedBookId === book._id ? 'border-brand-500 bg-brand-500/5' : 'border-dark-800 bg-dark-900/40 hover:border-dark-700'
+                      }`}>
                       <input
                         type="radio"
                         name="offeredBook"

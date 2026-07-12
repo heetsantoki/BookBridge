@@ -55,7 +55,7 @@ export const Chat: React.FC = () => {
       const res = await axios.get('http://localhost:5000/api/messages/conversations');
       if (res.data.success) {
         setConversations(res.data.conversations);
-        
+
         // Handle selecting chat based on query strings or first item
         if (partnerQueryId && resourceQueryId) {
           const matchingChat = res.data.conversations.find((c: any) => 
@@ -170,7 +170,7 @@ export const Chat: React.FC = () => {
 
   const handleTypingInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMessageInput(e.target.value);
-    
+
     if (!socket || !selectedChat) return;
 
     if (!isTyping) {
@@ -250,7 +250,7 @@ export const Chat: React.FC = () => {
             socket.emit('new_message', newMsgObj);
           }
           // Update conversations sidebar lastMessage text
-          setConversations(prev => 
+          setConversations(prev =>
             prev.map(c => c.conversationId === selectedChat.conversationId ? { ...c, lastMessage: newMsgObj } : c)
           );
         }
@@ -265,7 +265,7 @@ export const Chat: React.FC = () => {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 text-left animate-fade-in">
       <div className="glass-card flex h-[calc(100vh-12rem)] min-h-[450px] overflow-hidden border border-white/[0.06] bg-dark-900/40 shadow-2xl">
-        
+
         {/* CHAT CHANNELS SIDEBAR */}
         <aside className="w-80 border-r border-white/[0.06] flex flex-col h-full bg-dark-950/30 shrink-0">
           <div className="p-4 border-b border-white/[0.06] flex items-center justify-between bg-white/[0.01]">
@@ -274,7 +274,7 @@ export const Chat: React.FC = () => {
               <RefreshCw className="h-3.5 w-3.5 text-dark-450" />
             </button>
           </div>
-          
+
           <div className="flex-grow overflow-y-auto divide-y divide-white/[0.04]">
             {loadingChats ? (
               <div className="flex flex-col animate-pulse">
@@ -303,9 +303,8 @@ export const Chat: React.FC = () => {
                   <div
                     key={chat.conversationId}
                     onClick={() => setSelectedChat(chat)}
-                    className={`p-4 cursor-pointer hover:bg-white/[0.02] flex gap-3 transition-all duration-200 text-left items-start ${
-                      isSelected ? 'bg-brand-500/10 border-l-4 border-brand-500' : 'border-l-4 border-transparent'
-                    }`}
+                    className={`p-4 cursor-pointer hover:bg-white/[0.02] flex gap-3 transition-all duration-200 text-left items-start ${isSelected ? 'bg-brand-500/10 border-l-4 border-brand-500' : 'border-l-4 border-transparent'
+                      }`}
                   >
                     <img src={chat.otherUser?.avatar} className="h-9 w-9 rounded-lg bg-dark-950 border border-white/[0.06] object-cover" alt="" />
                     <div className="flex-grow min-w-0">
@@ -369,11 +368,10 @@ export const Chat: React.FC = () => {
                       return (
                         <div
                           key={index}
-                          className={`flex flex-col max-w-[50%] rounded-2xl p-4 gap-2.5 border ${
-                            isOwn
+                          className={`flex flex-col max-w-[50%] rounded-2xl p-4 gap-2.5 border ${isOwn
                               ? 'bg-brand-650/10 border-brand-500/10 rounded-tr-none self-end'
                               : 'bg-white/[0.02] border-white/[0.05] rounded-tl-none self-start'
-                          }`}
+                            }`}
                           style={{ width: isOwn ? '180px' : '220px' }}
                         >
                           <div className="h-3.5 bg-white/[0.02] rounded w-full" />
@@ -392,11 +390,10 @@ export const Chat: React.FC = () => {
                     return (
                       <div
                         key={msg._id}
-                        className={`flex flex-col max-w-[70%] rounded-2xl p-3 text-xs leading-relaxed transition-transform duration-200 hover:scale-[1.01] ${
-                          isOwn
+                        className={`flex flex-col max-w-[70%] rounded-2xl p-3 text-xs leading-relaxed transition-transform duration-200 hover:scale-[1.01] ${isOwn
                             ? 'bg-brand-600 text-white rounded-tr-none self-end shadow-glow-indigo/5 border border-brand-500/20'
                             : 'bg-white/[0.03] border border-white/[0.06] text-dark-150 rounded-2xl rounded-tl-none self-start'
-                        }`}
+                          }`}
                       >
                         {msg.image && (
                           <img
@@ -465,9 +462,9 @@ export const Chat: React.FC = () => {
                   onChange={handleTypingInput}
                   disabled={uploadingImage}
                 />
-                <button 
-                  type="submit" 
-                  disabled={uploadingImage || (!messageInput.trim() && !selectedImage)} 
+                <button
+                  type="submit"
+                  disabled={uploadingImage || (!messageInput.trim() && !selectedImage)}
                   className="glass-btn-primary p-2.5 flex items-center justify-center shrink-0 rounded-xl hover:-translate-y-0.5 shadow-glow-indigo"
                 >
                   <Send className="h-4.5 w-4.5" />
@@ -488,22 +485,22 @@ export const Chat: React.FC = () => {
 
       {/* Enlarged Image Modal Overlay */}
       {enlargedImage && (
-        <div 
+        <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm p-4 cursor-zoom-out"
           onClick={() => setEnlargedImage(null)}
         >
           <div className="relative max-w-4xl max-h-[90vh] flex flex-col items-center justify-center" onClick={(e) => e.stopPropagation()}>
-            <button 
+            <button
               onClick={() => setEnlargedImage(null)}
               className="absolute -top-12 right-0 bg-dark-900/80 hover:bg-red-650 hover:border-red-500 text-white rounded-xl p-2.5 border border-white/[0.08] z-10 transition-colors shadow-lg"
               title="Close Viewer"
             >
               <X className="h-5 w-5" />
             </button>
-            <img 
-              src={getImageUrl(enlargedImage)} 
-              alt="Enlarged shared content" 
-              className="max-w-full max-h-[80vh] object-contain rounded-2xl border border-white/[0.08] shadow-2xl bg-dark-950" 
+            <img
+              src={getImageUrl(enlargedImage)}
+              alt="Enlarged shared content"
+              className="max-w-full max-h-[80vh] object-contain rounded-2xl border border-white/[0.08] shadow-2xl bg-dark-950"
             />
           </div>
         </div>

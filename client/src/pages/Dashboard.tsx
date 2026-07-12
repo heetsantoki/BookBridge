@@ -191,7 +191,7 @@ export const Dashboard: React.FC = () => {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 text-left animate-fade-in">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        
+
         {/* LEFT COLUMN: Student Profile Info */}
         {user && (
           <div className="lg:col-span-4 flex flex-col gap-6">
@@ -200,7 +200,7 @@ export const Dashboard: React.FC = () => {
                 <img src={user.avatar} alt="Avatar" className="h-20 w-20 rounded-2xl bg-dark-950 object-cover shadow-lg border border-white/[0.08] mb-4" />
                 <h2 className="font-outfit text-base font-extrabold text-white">{user.name}</h2>
                 <span className="text-xs text-dark-400 mt-0.5">{user.email}</span>
-                
+
                 {/* Verified Badge */}
                 {user.isVerified ? (
                   <span className="inline-flex items-center gap-1.5 mt-4 text-[9px] text-accent-400 font-bold uppercase tracking-wider bg-accent-500/10 px-3 py-1 rounded-full border border-accent-500/20 shadow-glow-emerald">
@@ -272,41 +272,36 @@ export const Dashboard: React.FC = () => {
           <div className="flex gap-2.5 border-b border-white/[0.06] overflow-x-auto scrollbar-none">
             <button
               onClick={() => setActiveTab('listings')}
-              className={`pb-3 px-2 text-xs font-bold uppercase tracking-wider border-b-2 transition-all whitespace-nowrap ${
-                activeTab === 'listings' ? 'border-brand-500 text-brand-400' : 'border-transparent text-dark-450 hover:text-dark-200'
-              }`}
+              className={`pb-3 px-2 text-xs font-bold uppercase tracking-wider border-b-2 transition-all whitespace-nowrap ${activeTab === 'listings' ? 'border-brand-500 text-brand-400' : 'border-transparent text-dark-450 hover:text-dark-200'
+                }`}
             >
               My Listings ({myResources.length})
             </button>
             <button
               onClick={() => setActiveTab('requests')}
-              className={`pb-3 px-2 text-xs font-bold uppercase tracking-wider border-b-2 transition-all whitespace-nowrap ${
-                activeTab === 'requests' ? 'border-brand-500 text-brand-400' : 'border-transparent text-dark-450 hover:text-dark-200'
-              }`}
+              className={`pb-3 px-2 text-xs font-bold uppercase tracking-wider border-b-2 transition-all whitespace-nowrap ${activeTab === 'requests' ? 'border-brand-500 text-brand-400' : 'border-transparent text-dark-450 hover:text-dark-200'
+                }`}
             >
               My Trade Requests ({outgoingRequests.length})
             </button>
             <button
               onClick={() => setActiveTab('receivedExchanges')}
-              className={`pb-3 px-2 text-xs font-bold uppercase tracking-wider border-b-2 transition-all whitespace-nowrap ${
-                activeTab === 'receivedExchanges' ? 'border-brand-500 text-brand-400' : 'border-transparent text-dark-450 hover:text-dark-200'
-              }`}
+              className={`pb-3 px-2 text-xs font-bold uppercase tracking-wider border-b-2 transition-all whitespace-nowrap ${activeTab === 'receivedExchanges' ? 'border-brand-500 text-brand-400' : 'border-transparent text-dark-450 hover:text-dark-200'
+                }`}
             >
               Received Exchanges ({incomingExchanges.length})
             </button>
             <button
               onClick={() => setActiveTab('sentExchanges')}
-              className={`pb-3 px-2 text-xs font-bold uppercase tracking-wider border-b-2 transition-all whitespace-nowrap ${
-                activeTab === 'sentExchanges' ? 'border-brand-500 text-brand-400' : 'border-transparent text-dark-450 hover:text-dark-200'
-              }`}
+              className={`pb-3 px-2 text-xs font-bold uppercase tracking-wider border-b-2 transition-all whitespace-nowrap ${activeTab === 'sentExchanges' ? 'border-brand-500 text-brand-400' : 'border-transparent text-dark-450 hover:text-dark-200'
+                }`}
             >
               My Exchanges ({outgoingExchanges.length})
             </button>
             <button
               onClick={() => setActiveTab('wishlist')}
-              className={`pb-3 px-2 text-xs font-bold uppercase tracking-wider border-b-2 transition-all whitespace-nowrap ${
-                activeTab === 'wishlist' ? 'border-brand-500 text-brand-400' : 'border-transparent text-dark-450 hover:text-dark-200'
-              }`}
+              className={`pb-3 px-2 text-xs font-bold uppercase tracking-wider border-b-2 transition-all whitespace-nowrap ${activeTab === 'wishlist' ? 'border-brand-500 text-brand-400' : 'border-transparent text-dark-450 hover:text-dark-200'
+                }`}
             >
               My Wishlist ({wishlist.length})
             </button>
@@ -369,9 +364,8 @@ export const Dashboard: React.FC = () => {
                           </div>
 
                           <div className="flex items-center gap-4 self-end sm:self-auto">
-                            <span className={`text-[10px] px-3 py-1 rounded-xl font-extrabold uppercase tracking-wider ${
-                              res.status === 'Available' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-brand-500/10 text-brand-350 border border-brand-500/20'
-                            }`}>
+                            <span className={`text-[10px] px-3 py-1 rounded-xl font-extrabold uppercase tracking-wider ${res.status === 'Available' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-brand-500/10 text-brand-350 border border-brand-500/20'
+                              }`}>
                               {res.status}
                             </span>
                             <button onClick={() => deleteListing(res._id)} className="text-[10px] text-red-400 hover:text-red-300 font-extrabold uppercase tracking-wider">
@@ -399,13 +393,13 @@ export const Dashboard: React.FC = () => {
                                   <div className="flex items-center gap-2.5 self-end sm:self-auto">
                                     {req.status === 'Pending' ? (
                                       <>
-                                        <button 
+                                        <button
                                           onClick={() => handleUpdateStatus(req._id, 'Approved')}
                                           className="bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold py-1.5 px-4 rounded-xl text-[10px] uppercase shadow-md shadow-emerald-600/10 transition-all duration-200"
                                         >
                                           Approve
                                         </button>
-                                        <button 
+                                        <button
                                           onClick={() => handleUpdateStatus(req._id, 'Rejected')}
                                           className="bg-white/[0.02] border border-white/[0.08] text-dark-350 hover:text-white font-bold py-1.5 px-4 rounded-xl text-[10px] uppercase transition-all duration-200"
                                         >
@@ -542,13 +536,13 @@ export const Dashboard: React.FC = () => {
                         <div className="flex gap-2">
                           {req.status === 'Pending' && (
                             <>
-                              <button 
+                              <button
                                 onClick={() => handleAcceptExchange(req)}
                                 className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1.5 px-4 rounded text-xs uppercase shadow transition-colors"
                               >
                                 Accept
                               </button>
-                              <button 
+                              <button
                                 onClick={() => handleRejectExchange(req._id)}
                                 className="bg-dark-950 border border-dark-800 text-dark-400 hover:text-dark-100 font-bold py-1.5 px-4 rounded text-xs uppercase transition-colors"
                               >
@@ -650,7 +644,7 @@ export const Dashboard: React.FC = () => {
                         <span className={getStatusBadge(req.status)}>{req.status}</span>
                         <div className="flex gap-2 items-center">
                           {req.status === 'Pending' && (
-                            <button 
+                            <button
                               onClick={() => handleCancelExchange(req._id)}
                               className="bg-red-950 border border-red-800 hover:bg-red-700 hover:text-white text-red-400 font-bold py-1.5 px-4 rounded text-xs uppercase transition-all"
                             >

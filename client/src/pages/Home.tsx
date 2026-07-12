@@ -22,7 +22,7 @@ const conditions = ['New', 'Like New', 'Good', 'Fair', 'Poor'];
 
 export const Home: React.FC = () => {
   const { user } = useAuth();
-  
+
   // Search & Filter State
   const [search, setSearch] = useState('');
   const [selectedDept, setSelectedDept] = useState('');
@@ -109,8 +109,8 @@ export const Home: React.FC = () => {
             <div>
               <h4 className="font-outfit text-sm font-extrabold text-amber-200 uppercase tracking-wide">Account Pending Verification</h4>
               <p className="text-xs text-dark-300 mt-1 max-w-2xl leading-relaxed">
-                {user.studentIdImage 
-                  ? 'Your Student ID has been uploaded and is waiting for administrator approval. You can browse resources, but posting new resource listings requires active approval.' 
+                {user.studentIdImage
+                  ? 'Your Student ID has been uploaded and is waiting for administrator approval. You can browse resources, but posting new resource listings requires active approval.'
                   : 'Please upload a Student ID card photo under your profile configuration to unlock listing and exchange privileges.'
                 }
               </p>
@@ -129,7 +129,7 @@ export const Home: React.FC = () => {
         {/* Ambient background glows */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-brand-500/10 rounded-full blur-3xl pointer-events-none animate-pulse-slow" />
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-accent-500/10 rounded-full blur-3xl pointer-events-none animate-pulse-slow [animation-delay:2s]" />
-        
+
         {/* Subtle grid mesh overlay */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
 
@@ -138,7 +138,7 @@ export const Home: React.FC = () => {
             <Sparkles className="h-3.5 w-3.5 animate-spin-slow" /> University Circle Hub
           </span>
           <h1 className="font-outfit text-3xl sm:text-5xl font-extrabold tracking-tight text-white mb-4 leading-[1.15]">
-            Peer-to-Peer Academic <span className="bg-gradient-to-r from-brand-300 to-accent-400 bg-clip-text text-transparent">Resource Exchange</span>
+            Peer-to-Peer Academic <span className="text-gradient-brand">Resource Exchange</span>
           </h1>
           <p className="text-sm sm:text-base text-dark-300 leading-relaxed mb-8 max-w-xl">
             Bridge the textbook gap. Borrow, rent, buy, or download notes, lab manuals, project reports, and exam papers directly from verified students on campus.
@@ -162,8 +162,8 @@ export const Home: React.FC = () => {
               <BrainCircuit className="h-6 w-6 text-brand-400 animate-pulse" />
               <h2 className="font-outfit text-xl sm:text-2xl font-extrabold text-white">AI-Recommended for You</h2>
             </div>
-            <button 
-              onClick={fetchRecommendations} 
+            <button
+              onClick={fetchRecommendations}
               disabled={loadingAI}
               className="p-2 bg-white/[0.02] border border-white/[0.06] hover:bg-white/[0.06] rounded-xl text-dark-300 hover:text-dark-100 transition-colors"
               title="Refresh suggestions"
@@ -201,12 +201,12 @@ export const Home: React.FC = () => {
                 Clear All
               </button>
             </div>
-            
+
             {/* Dept Filter */}
             <div className="flex flex-col gap-2">
               <label className="text-[10px] font-bold text-dark-450 uppercase tracking-wider">Department</label>
-              <select 
-                value={selectedDept} 
+              <select
+                value={selectedDept}
                 onChange={(e) => setSelectedDept(e.target.value)}
                 className="glass-input py-2 text-xs bg-dark-900/60 border-white/[0.06]"
               >
@@ -218,21 +218,21 @@ export const Home: React.FC = () => {
             {/* Semester Filter */}
             <div className="flex flex-col gap-2 mt-5">
               <label className="text-[10px] font-bold text-dark-450 uppercase tracking-wider">Semester</label>
-              <select 
-                value={selectedSem} 
+              <select
+                value={selectedSem}
                 onChange={(e) => setSelectedSem(e.target.value)}
                 className="glass-input py-2 text-xs bg-dark-900/60 border-white/[0.06]"
               >
                 <option value="">All Semesters</option>
-                {[1,2,3,4,5,6,7,8].map(s => <option key={s} value={s}>Semester {s}</option>)}
+                {[1, 2, 3, 4, 5, 6, 7, 8].map(s => <option key={s} value={s}>Semester {s}</option>)}
               </select>
             </div>
 
             {/* Type Filter */}
             <div className="flex flex-col gap-2 mt-5">
               <label className="text-[10px] font-bold text-dark-450 uppercase tracking-wider">Resource Type</label>
-              <select 
-                value={selectedType} 
+              <select
+                value={selectedType}
                 onChange={(e) => setSelectedType(e.target.value)}
                 className="glass-input py-2 text-xs bg-dark-900/60 border-white/[0.06]"
               >
@@ -244,8 +244,8 @@ export const Home: React.FC = () => {
             {/* Exchange Filter */}
             <div className="flex flex-col gap-2 mt-5">
               <label className="text-[10px] font-bold text-dark-450 uppercase tracking-wider">Exchange Mode</label>
-              <select 
-                value={selectedExchange} 
+              <select
+                value={selectedExchange}
                 onChange={(e) => setSelectedExchange(e.target.value)}
                 className="glass-input py-2 text-xs bg-dark-900/60 border-white/[0.06]"
               >
@@ -257,8 +257,8 @@ export const Home: React.FC = () => {
             {/* Condition Filter */}
             <div className="flex flex-col gap-2 mt-5">
               <label className="text-[10px] font-bold text-dark-450 uppercase tracking-wider">Condition</label>
-              <select 
-                value={selectedCondition} 
+              <select
+                value={selectedCondition}
                 onChange={(e) => setSelectedCondition(e.target.value)}
                 className="glass-input py-2 text-xs bg-dark-900/60 border-white/[0.06]"
               >
@@ -286,8 +286,8 @@ export const Home: React.FC = () => {
             <button type="submit" className="glass-btn-primary px-6 flex items-center gap-2 text-xs font-bold uppercase tracking-wider shrink-0 hover:-translate-y-0.5 active:translate-y-0">
               <Search className="h-4 w-4" /> Search
             </button>
-            <button 
-              type="button" 
+            <button
+              type="button"
               onClick={() => setShowMobileFilters(!showMobileFilters)}
               className="lg:hidden glass-btn-secondary p-3 flex items-center justify-center shrink-0"
             >
@@ -311,7 +311,7 @@ export const Home: React.FC = () => {
                 </select>
                 <select value={selectedSem} onChange={(e) => setSelectedSem(e.target.value)} className="glass-input text-xs bg-dark-900 border-white/[0.06]">
                   <option value="">All Semesters</option>
-                  {[1,2,3,4,5,6,7,8].map(s => <option key={s} value={s}>Semester {s}</option>)}
+                  {[1, 2, 3, 4, 5, 6, 7, 8].map(s => <option key={s} value={s}>Semester {s}</option>)}
                 </select>
                 <select value={selectedType} onChange={(e) => setSelectedType(e.target.value)} className="glass-input text-xs bg-dark-900 border-white/[0.06]">
                   <option value="">All Types</option>

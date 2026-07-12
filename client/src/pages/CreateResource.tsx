@@ -129,8 +129,8 @@ export const CreateResource: React.FC = () => {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8 text-left">
-      <button 
-        onClick={() => navigate(-1)} 
+      <button
+        onClick={() => navigate(-1)}
         className="inline-flex items-center gap-1 text-xs text-dark-400 hover:text-dark-200 font-bold uppercase tracking-wider mb-6"
       >
         <ArrowLeft className="h-4 w-4" /> Go Back

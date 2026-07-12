@@ -189,7 +189,7 @@ export const AdminDashboard: React.FC = () => {
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        
+
         {/* LEFT COLUMN: Student ID verification queue */}
         <section className="lg:col-span-7 flex flex-col gap-6">
           <div className="glass-card p-6 border-white/[0.05] bg-dark-900/10">
@@ -226,9 +226,9 @@ export const AdminDashboard: React.FC = () => {
                           alt="Student ID Card Upload"
                           className="h-full w-full object-contain p-2"
                         />
-                        <a 
-                          href={student.studentIdImage} 
-                          target="_blank" 
+                        <a
+                          href={student.studentIdImage}
+                          target="_blank"
                           rel="noreferrer"
                           className="absolute bottom-3 right-3 bg-black/75 hover:bg-black text-[9px] text-white py-1.5 px-3 rounded-lg border border-white/[0.08] font-bold uppercase tracking-wider flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                         >
@@ -279,8 +279,8 @@ export const AdminDashboard: React.FC = () => {
                         <span className="text-dark-450 font-bold uppercase tracking-wider">{dept.count} item{dept.count !== 1 && 's'}</span>
                       </div>
                       <div className="w-full bg-dark-950 rounded-full h-2 overflow-hidden border border-white/[0.06]">
-                        <div 
-                          className="bg-brand-500 h-full rounded-full transition-all duration-500 shadow-glow-indigo" 
+                        <div
+                          className="bg-brand-500 h-full rounded-full transition-all duration-500 shadow-glow-indigo"
                           style={{ width: `${percentage}%` }}
                         />
                       </div>
@@ -310,8 +310,8 @@ export const AdminDashboard: React.FC = () => {
                         <span className="text-accent-400 font-bold uppercase tracking-wider">{item.requestCount} req{item.requestCount !== 1 && 's'}</span>
                       </div>
                       <div className="w-full bg-dark-950 rounded-full h-2 overflow-hidden border border-white/[0.06]">
-                        <div 
-                          className="bg-accent-500 h-full rounded-full transition-all duration-500 shadow-glow-emerald" 
+                        <div
+                          className="bg-accent-500 h-full rounded-full transition-all duration-500 shadow-glow-emerald"
                           style={{ width: `${percentage}%` }}
                         />
                       </div>
