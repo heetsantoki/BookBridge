@@ -443,9 +443,13 @@ export const ResourceDetails: React.FC = () => {
             <div className="glass-card p-6 flex flex-col gap-4 border-white/[0.05] bg-dark-900/10">
               <h3 className="text-[10px] font-bold text-dark-500 uppercase tracking-widest border-b border-white/[0.06] pb-2.5">Listed By</h3>
               <div className="flex items-center gap-3">
-                <img src={owner.avatar} alt="owner avatar" className="h-11 w-11 rounded-lg bg-dark-950 object-cover border border-white/[0.06]" />
+                <Link to={`/profile/${owner._id}`}>
+                  <img src={owner.avatar} alt="owner avatar" className="h-11 w-11 rounded-lg bg-dark-950 object-cover border border-white/[0.06] hover:scale-105 transition-transform" />
+                </Link>
                 <div className="flex flex-col text-left">
-                  <span className="text-sm font-extrabold text-dark-100">{owner.name}</span>
+                  <Link to={`/profile/${owner._id}`} className="text-sm font-extrabold text-dark-100 hover:text-brand-400 transition-colors">
+                    {owner.name}
+                  </Link>
                   <span className="text-xs text-dark-405 leading-normal mt-0.5 font-medium">{owner.department}</span>
                 </div>
               </div>

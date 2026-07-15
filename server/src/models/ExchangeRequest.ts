@@ -7,6 +7,8 @@ export interface IExchangeRequest extends Document {
   offeredBook: mongoose.Types.ObjectId;
   message?: string;
   status: 'Pending' | 'Accepted' | 'Rejected' | 'Cancelled' | 'Completed';
+  isReviewedByRequester: boolean;
+  isReviewedByReceiver: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -21,7 +23,9 @@ const ExchangeRequestSchema: Schema = new Schema({
     type: String,
     enum: ['Pending', 'Accepted', 'Rejected', 'Cancelled', 'Completed'],
     default: 'Pending'
-  }
+  },
+  isReviewedByRequester: { type: Boolean, default: false },
+  isReviewedByReceiver: { type: Boolean, default: false }
 }, {
   timestamps: true
 });

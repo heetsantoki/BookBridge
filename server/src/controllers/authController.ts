@@ -381,3 +381,17 @@ export const uploadStudentId = async (req: AuthRequest, res: Response) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+export const getUserProfile = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const user = await User.findById(userId).select('name avatar department semester role isVerified avgRating reviewCount');
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+    res.status(200).json({ success: true, user });
+  } catch (error: any) {
+    console.error('Get User Profile Error:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};

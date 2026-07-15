@@ -17,6 +17,8 @@ export interface IUser extends Document {
   emailOtp?: string;
   emailOtpExpires?: Date;
   wishlist: mongoose.Types.ObjectId[];
+  avgRating: number;
+  reviewCount: number;
   createdAt: Date;
 }
 
@@ -36,7 +38,9 @@ const UserSchema: Schema = new Schema({
   isEmailVerified: { type: Boolean, default: false },
   emailOtp: { type: String },
   emailOtpExpires: { type: Date },
-  wishlist: [{ type: Schema.Types.ObjectId, ref: 'Resource' }]
+  wishlist: [{ type: Schema.Types.ObjectId, ref: 'Resource' }],
+  avgRating: { type: Number, default: 0 },
+  reviewCount: { type: Number, default: 0 }
 }, {
   timestamps: true
 });

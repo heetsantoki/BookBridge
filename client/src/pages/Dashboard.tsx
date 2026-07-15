@@ -5,7 +5,7 @@ import { useSocket } from '../context/SocketContext';
 import { BookCard } from '../components/BookCard';
 import { getImageUrl } from '../utils/image';
 import {
-  Heart, Clock, ShieldAlert, Award, FileText, MessageSquare, Mail, Phone, Plus
+  Heart, Clock, ShieldAlert, Award, FileText, MessageSquare, Mail, Phone, Plus, Star, Edit3
 } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 
@@ -29,6 +29,73 @@ export const Dashboard: React.FC = () => {
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [uploadingId, setUploadingId] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
+
+  // Review Modal States
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewComment, setReviewComment] = useState('');
+  const [submittingReview, setSubmittingReview] = useState(false);
+  const [reviewError, setReviewError] = useState<string | null>(null);
+  const [activeIdForReview, setActiveIdForReview] = useState<string | null>(null);
+  const [activeTypeForReview, setActiveTypeForReview] = useState<'Transaction' | 'ExchangeRequest' | null>(null);
+  const [isEditReview, setIsEditReview] = useState(false);
+  const [editingReviewId, setEditingReviewId] = useState<string | null>(null);
+
+  const handleOpenReviewModal = async (id: string, type: 'Transaction' | 'ExchangeRequest', targetUserId: string, isEdit: boolean) => {
+    console.log('Opening review modal for target user:', targetUserId);
+    setActiveIdForReview(id);
+    setActiveTypeForReview(type);
+    setIsEditReview(isEdit);
+    setReviewError(null);
+    setReviewComment('');
+    setReviewRating(5);
+    setEditingReviewId(null);
+
+    if (isEdit) {
+      try {
+        const urlType = type === 'Transaction' ? 'transaction' : 'exchange-request';
+        const res = await axios.get(`http://localhost:5000/api/reviews/${urlType}/${id}`);
+        if (res.data.success) {
+          setReviewRating(res.data.review.rating);
+          setReviewComment(res.data.review.comment);
+          setEditingReviewId(res.data.review._id);
+        }
+      } catch (err: any) {
+        console.error('Error loading review:', err);
+        setReviewError('Failed to load existing review');
+      }
+    }
+    setShowReviewModal(true);
+  };
+
+  const handleReviewSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmittingReview(true);
+    setReviewError(null);
+    try {
+      let res;
+      if (isEditReview && editingReviewId) {
+        res = await axios.put(`http://localhost:5000/api/reviews/${editingReviewId}`, {
+          rating: reviewRating,
+          comment: reviewComment
+        });
+      } else {
+        const payload = activeTypeForReview === 'Transaction'
+          ? { transactionId: activeIdForReview, rating: reviewRating, comment: reviewComment }
+          : { exchangeRequestId: activeIdForReview, rating: reviewRating, comment: reviewComment };
+        res = await axios.post('http://localhost:5000/api/reviews', payload);
+      }
+
+      if (res.data.success) {
+        setShowReviewModal(false);
+        fetchDashboardData();
+      }
+    } catch (err: any) {
+      setReviewError(err.response?.data?.message || 'Failed to submit review');
+    } finally {
+      setSubmittingReview(false);
+    }
+  };
 
   const fetchDashboardData = async () => {
     if (!user) return;
@@ -407,7 +474,28 @@ export const Dashboard: React.FC = () => {
                                         </button>
                                       </>
                                     ) : (
-                                      <span className={getStatusBadge(req.status)}>{req.status}</span>
+                                      <div className="flex flex-col items-end gap-1.5">
+                                        <span className={getStatusBadge(req.status)}>{req.status}</span>
+                                        {req.status === 'Completed' && (
+                                          <div className="mt-1">
+                                            {!req.isReviewedByOwner ? (
+                                              <button
+                                                onClick={() => handleOpenReviewModal(req._id, 'Transaction', req.requester._id, false)}
+                                                className="glass-btn-primary py-1 px-2.5 text-[9px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-none"
+                                              >
+                                                <Star className="h-3 w-3 fill-amber-400 text-amber-400" /> Leave Review
+                                              </button>
+                                            ) : (
+                                              <button
+                                                onClick={() => handleOpenReviewModal(req._id, 'Transaction', req.requester._id, true)}
+                                                className="glass-btn-secondary py-1 px-2.5 text-[9px] font-bold uppercase tracking-wider flex items-center gap-1"
+                                              >
+                                                <Edit3 className="h-3 w-3 text-brand-400" /> Edit Review
+                                              </button>
+                                            )}
+                                          </div>
+                                        )}
+                                      </div>
                                     )}
                                   </div>
                                 </div>
@@ -459,6 +547,25 @@ export const Dashboard: React.FC = () => {
                             >
                               <MessageSquare className="h-3.5 w-3.5" /> Initiate Chat
                             </button>
+                          </div>
+                        )}
+                        {req.status === 'Completed' && req.owner && (
+                          <div className="mt-1">
+                            {!req.isReviewedByRequester ? (
+                              <button
+                                onClick={() => handleOpenReviewModal(req._id, 'Transaction', req.owner._id, false)}
+                                className="glass-btn-primary py-1.5 px-3 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-none"
+                              >
+                                <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" /> Leave Review
+                              </button>
+                            ) : (
+                              <button
+                                onClick={() => handleOpenReviewModal(req._id, 'Transaction', req.owner._id, true)}
+                                className="glass-btn-secondary py-1.5 px-3 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1"
+                              >
+                                <Edit3 className="h-3.5 w-3.5 text-brand-400" /> Edit Review
+                              </button>
+                            )}
                           </div>
                         )}
                       </div>
@@ -533,7 +640,7 @@ export const Dashboard: React.FC = () => {
 
                       <div className="flex justify-between items-center pt-2">
                         <span className={getStatusBadge(req.status)}>{req.status}</span>
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 items-center">
                           {req.status === 'Pending' && (
                             <>
                               <button
@@ -569,6 +676,25 @@ export const Dashboard: React.FC = () => {
                                 Complete Exchange
                               </button>
                             </>
+                          )}
+                          {req.status === 'Completed' && req.requester && (
+                            <div>
+                              {!req.isReviewedByReceiver ? (
+                                <button
+                                  onClick={() => handleOpenReviewModal(req._id, 'ExchangeRequest', req.requester._id, false)}
+                                  className="glass-btn-primary py-1.5 px-3 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-none"
+                                >
+                                  <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" /> Leave Review
+                                </button>
+                              ) : (
+                                <button
+                                  onClick={() => handleOpenReviewModal(req._id, 'ExchangeRequest', req.requester._id, true)}
+                                  className="glass-btn-secondary py-1.5 px-3 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1"
+                                >
+                                  <Edit3 className="h-3.5 w-3.5 text-brand-400" /> Edit Review
+                                </button>
+                              )}
+                            </div>
                           )}
                         </div>
                       </div>
@@ -671,6 +797,25 @@ export const Dashboard: React.FC = () => {
                               </button>
                             </>
                           )}
+                          {req.status === 'Completed' && req.receiver && (
+                            <div>
+                              {!req.isReviewedByRequester ? (
+                                <button
+                                  onClick={() => handleOpenReviewModal(req._id, 'ExchangeRequest', req.receiver._id, false)}
+                                  className="glass-btn-primary py-1.5 px-3 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-none"
+                                >
+                                  <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" /> Leave Review
+                                </button>
+                              ) : (
+                                <button
+                                  onClick={() => handleOpenReviewModal(req._id, 'ExchangeRequest', req.receiver._id, true)}
+                                  className="glass-btn-secondary py-1.5 px-3 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1"
+                                >
+                                  <Edit3 className="h-3.5 w-3.5 text-brand-400" /> Edit Review
+                                </button>
+                              )}
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -706,6 +851,63 @@ export const Dashboard: React.FC = () => {
           </div>
         </main>
       </div>
+
+      {/* Review Modal */}
+      {showReviewModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-dark-950/85 backdrop-blur-md p-4">
+          <div className="glass-card max-w-md w-full p-6 border-white/[0.08] bg-dark-900/90 shadow-2xl relative text-left">
+            <h3 className="font-outfit text-md font-bold text-white border-b border-white/[0.06] pb-3">
+              {isEditReview ? 'Edit Your Review' : 'Review Exchange'}
+            </h3>
+            {reviewError && (
+              <div className="my-3 text-xs text-red-400 font-semibold">{reviewError}</div>
+            )}
+            <form onSubmit={handleReviewSubmit} className="flex flex-col gap-4 mt-4">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[10px] font-bold text-dark-450 uppercase tracking-widest">Rate User</label>
+                <div className="flex gap-1.5 mt-1">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      type="button"
+                      key={star}
+                      onClick={() => setReviewRating(star)}
+                      className="text-amber-400 hover:scale-110 transition-transform duration-100"
+                    >
+                      <Star className={`h-6.5 w-6.5 ${reviewRating >= star ? 'fill-amber-400' : 'text-dark-600'}`} />
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-[10px] font-bold text-dark-450 uppercase tracking-widest">Your review comment</label>
+                <textarea
+                  placeholder="Describe book quality, coordination, speed of delivery..."
+                  value={reviewComment}
+                  onChange={(e) => setReviewComment(e.target.value)}
+                  className="glass-input text-xs h-28 resize-none py-2 border-white/[0.08]"
+                  required
+                />
+              </div>
+              <div className="flex gap-3 mt-2">
+                <button
+                  type="submit"
+                  disabled={submittingReview}
+                  className="glass-btn-primary flex-grow py-3 text-xs font-bold uppercase tracking-wider"
+                >
+                  {submittingReview ? 'Submitting...' : 'Submit Review'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowReviewModal(false)}
+                  className="glass-btn-secondary py-3 px-5 text-xs font-bold uppercase tracking-wider"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

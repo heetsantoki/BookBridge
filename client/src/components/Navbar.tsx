@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
 import { useTheme } from '../context/ThemeContext';
-import { BookOpen, MessageSquare, Bell, User, LogOut, ChevronDown, ShieldAlert, Award, Plus, Sun, Moon, Monitor } from 'lucide-react';
+import { BookOpen, MessageSquare, Bell, User, LogOut, ChevronDown, ShieldAlert, Award, Plus, Sun, Moon, Monitor, Star } from 'lucide-react';
 import axios from 'axios';
  
 export const Navbar: React.FC = () => {
@@ -337,6 +337,15 @@ export const Navbar: React.FC = () => {
                         >
                           <User className="h-4 w-4 text-brand-400" /> My Profile & Listings
                         </Link>
+                        {user && (
+                          <Link
+                            to={`/profile/${user.id}`}
+                            onClick={() => setShowProfileMenu(false)}
+                            className="flex items-center gap-2 px-4 py-2.5 text-xs font-semibold text-dark-300 hover:text-dark-100 hover:bg-white/[0.02] transition-colors"
+                          >
+                            <Star className="h-4 w-4 text-amber-400 fill-amber-400/20" /> Reviews & Feedback
+                          </Link>
+                        )}
                         <Link
                           to="/chat"
                           onClick={() => setShowProfileMenu(false)}

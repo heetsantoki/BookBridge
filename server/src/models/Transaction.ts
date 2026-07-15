@@ -7,6 +7,8 @@ export interface ITransaction extends Document {
   exchangeType: 'Borrow' | 'Rent' | 'Buy' | 'Free';
   price: number;
   status: 'Pending' | 'Approved' | 'Rejected' | 'Completed';
+  isReviewedByRequester: boolean;
+  isReviewedByOwner: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -25,7 +27,9 @@ const TransactionSchema: Schema = new Schema({
     type: String,
     enum: ['Pending', 'Approved', 'Rejected', 'Completed'],
     default: 'Pending'
-  }
+  },
+  isReviewedByRequester: { type: Boolean, default: false },
+  isReviewedByOwner: { type: Boolean, default: false }
 }, {
   timestamps: true
 });

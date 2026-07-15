@@ -12,6 +12,7 @@ import { CreateResource } from './pages/CreateResource';
 import { Chat } from './pages/Chat';
 import { Dashboard } from './pages/Dashboard';
 import { AdminDashboard } from './pages/AdminDashboard';
+import { UserProfile } from './pages/UserProfile';
 
 const PageSkeleton: React.FC = () => (
   <div className="min-h-screen w-full bg-dark-950 flex flex-col text-left animate-pulse">
@@ -125,6 +126,11 @@ function AppContent() {
           <Route path="/dashboard" element={
             <ProtectedRoute>
               <Dashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/profile/:userId" element={
+            <ProtectedRoute>
+              <UserProfile />
             </ProtectedRoute>
           } />
 
